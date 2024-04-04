@@ -1,12 +1,14 @@
 import { Container, Image, Nav, NavDropdown, Navbar } from "react-bootstrap";
 import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
+import { Provider } from "react-redux";
 import { auth } from '../src/firebase'
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
 
 import HomeDashboard from "./pages/HomeDashboard/HomeDashboard";
 import AuthPage from "./pages/AuthPage";
 import AuthProvider from "./components/AuthProvider";
-import { Provider } from "react-redux";
 import store from "./store";
 
 
@@ -52,17 +54,19 @@ function Layout() {
 
 export default function App() {
     return (
-        <AuthProvider>
-            <Provider store={store}>
-                <BrowserRouter>
-                    <Routes>
-                        <Route path="/login" element={<AuthPage />} />
-                        <Route path="/" element={<Layout />} >
-                            <Route index element={<HomeDashboard />} />
-                        </Route>
-                    </Routes>
-                </BrowserRouter>
-            </Provider>
-        </AuthProvider>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <AuthProvider>
+                <Provider store={store}>
+                    <BrowserRouter>
+                        <Routes>
+                            <Route path="/login" element={<AuthPage />} />
+                            <Route path="/" element={<Layout />} >
+                                <Route index element={<HomeDashboard />} />
+                            </Route>
+                        </Routes>
+                    </BrowserRouter>
+                </Provider>
+            </AuthProvider>
+        </LocalizationProvider>
     )
 }

@@ -1,20 +1,27 @@
-import { Card, CardContent, Divider, Typography } from "@mui/material";
-import { useContext, useEffect } from "react";
-import { Badge, Col, Container, Row } from "react-bootstrap";
+import { Card } from "@mui/material";
+import { useContext, useEffect, useState } from "react";
+import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
 import AddCircleOutlineRoundedIcon from '@mui/icons-material/AddCircleOutlineRounded';
 
 import { AuthContext } from "../../components/AuthProvider";
-import { auth } from "../../firebase";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllTaskByUser } from "../../components/tadelSlice";
+import CardTemplate from "./components/CardTemplate";
+import { Checkbox, Drawer, Option, Select } from "@mui/joy";
+import { DatePicker } from "@mui/x-date-pickers";
+import { MuiColorInput } from "mui-color-input";
+import { auth } from "../../firebase";
+
 
 export default function HomeDashboard() {
 
     const { currentUser } = useContext(AuthContext);
     const navigate = useNavigate();
     const dispatch = useDispatch();
+
+    const [showAddDrawer, setShowAddDrawer] = useState(false)
 
     useEffect(() => {
         if (currentUser === null) {
@@ -54,93 +61,179 @@ export default function HomeDashboard() {
                 </Row>
             </Container>
             <Row className="justify-content-center">
-                <Col md={3} style={{ border: "1px solid #DDDDDD", borderRadius: "15px", backgroundColor: "#F9FBE7" }} className="mx-3">
+                <Col md={3} style={{ border: "1px solid #E5E7E9", borderRadius: "15px", backgroundColor: "#FBFCFC" }} className="mx-3">
                     <h5 className="mt-3" style={{ color: "#424242" }}>To Do</h5>
-                    <Card
-                        className="py-1 my-3 text-center rounded-pill"
-                        variant="outlined"
-                        style={{ cursor: "pointer", backgroundColor: "#FAFAFA" }}>
-                        <AddCircleOutlineRoundedIcon style={{ color: "#616161" }} />
-                    </Card>
+                    <div className="d-flex justify-content-center mb-2">
+                        <Button size="sm" variant="outline-light rounded-pill" onClick={() => setShowAddDrawer(true)}>
+                            <AddCircleOutlineRoundedIcon style={{ color: "#616161" }} />
+                        </Button>
+                    </div>
                     <CardTemplate allTasks={allTasks} status="pending" />
                 </Col>
-                <Col md={3} style={{ border: "1px solid #DDDDDD", borderRadius: "15px", backgroundColor: "#E1F5FE" }} className="mx-3" >
+                <Col md={3} style={{ border: "1px solid #E5E7E9", borderRadius: "15px", backgroundColor: "#FBFCFC" }} className="mx-3" >
                     <h5 className="mt-3" style={{ color: "#424242" }}>In Progress</h5>
-                    <Card
-                        className="py-1 my-3 text-center rounded-pill"
-                        variant="outlined"
-                        style={{ cursor: "pointer", backgroundColor: "#FAFAFA" }}>
-                        <AddCircleOutlineRoundedIcon style={{ color: "#616161" }} />
-                    </Card>
+                    <div className="d-flex justify-content-center mb-2">
+                        <Button size="sm" variant="outline-light rounded-pill" onClick={() => setShowAddDrawer(true)}>
+                            <AddCircleOutlineRoundedIcon style={{ color: "#616161" }} />
+                        </Button>
+                    </div>
                     <CardTemplate allTasks={allTasks} status="progress" />
                 </Col>
-                <Col md={3} style={{ border: "1px solid #DDDDDD", borderRadius: "15px", backgroundColor: "#E0F2F1" }} className="mx-3">
+                <Col md={3} style={{ border: "1px solid #E5E7E9", borderRadius: "15px", backgroundColor: "#FBFCFC" }} className="mx-3">
                     <h5 className="mt-3" style={{ color: "#424242" }}>Completed</h5>
-                    <Card
-                        className="py-1 my-3 text-center rounded-pill"
-                        variant="outlined"
-                        style={{ cursor: "pointer", backgroundColor: "#FAFAFA" }}>
-                        <AddCircleOutlineRoundedIcon style={{ color: "#616161" }} />
-                    </Card>
+                    <div className="d-flex justify-content-center mb-2">
+                        <Button size="sm" variant="outline-light rounded-pill">
+                            <AddCircleOutlineRoundedIcon style={{ color: "#616161" }} />
+                        </Button>
+                    </div>
                     <CardTemplate allTasks={allTasks} status="completed" />
                 </Col>
             </Row>
+            <AddTaskDrawer allTasks={allTasks} showAddDrawer={showAddDrawer} setShowAddDrawer={setShowAddDrawer} />
         </>
     )
 }
 
 
-function CardTemplate({ allTasks, status }) {
 
-    const currentUser = auth.currentUser;
-    const navigate = useNavigate();
 
-    if (!currentUser) {
-        // Redirect the user to login if currentUser is null
-        navigate("/login");
-        return null; // Returning null to prevent rendering while redirecting
+function AddTaskDrawer({ showAddDrawer, setShowAddDrawer }) {
+
+    const [title, setTitle] = useState("")
+    const [content, setContent] = useState("")
+    const [status, setStatus] = useState("pending")
+    const [startDate, setStartDate] = useState(null)
+    const [endDate, setEndDate] = useState(null)
+    const [urgent, setUrgent] = useState(false)
+    const [assignee, setAssignee] = useState("test@email.com")
+    const [colorTag, setColorTag] = useState("")
+
+    const originator = auth.currentUser.email;
+
+    function handleSubmit(e) {
+        e.preventDefault();
+
+        const newTaskData = {
+            title,
+            content,
+            status,
+            start_date: startDate,
+            end_date: endDate,
+            urgent,
+            assignee,
+            originator
+        }
+
+        console.log(newTaskData)
     }
 
-    console.log(allTasks)
-
-    return allTasks.filter((task) => task.status === status && task.originator === currentUser.email).map((data) => {
-
-        return (
-            <Card className="my-4" elevation={2} key={data.task_id} draggable>
-                <CardContent>
-                    <h6>
-                        {data.title}
-                        {data.urgent ? (
-                            <Badge className="ms-4" pill bg="danger" text="danger">U</Badge>
-                        ) : ("")}
-                        <Badge className="ms-4" pill bg="outline" style={{ backgroundColor: "#DFFF00", color: "#DFFF00" }}>color tag</Badge>
-                    </h6>
-                </CardContent>
-                <Divider />
-                <Row>
-                    <Col>
-                        <Typography variant="caption" className="text-start ms-3 text-muted">{data.assigned_to}</Typography>
-                    </Col>
-                    <Col className="d-flex justify-content-end align-items-center">
-                        <Typography variant="caption" className="text-muted me-3">
-                            Deadline:
-                            {(() => {
-                                // Convert data.end_date to a Date object
-                                const endDate = new Date(data.end_date);
-
-                                // Extract day, month, and year components
-                                const day = endDate.getDate();
-                                const month = endDate.getMonth() + 1; // Adding 1 since month is zero-based
-                                const year = endDate.getFullYear();
-
-                                // Return formatted date string
-                                return `${day}/${month}/${year}`;
-                            })()}
-                        </Typography>
-                    </Col>
+    return (
+        <>
+            <Drawer size="lg" open={showAddDrawer} onClose={() => setShowAddDrawer(false)} anchor="right">
+                <Row style={{ borderBottom: "3px solid #F2F3F4" }}>
+                    <h2 className="mt-5 ms-5">Add New Task</h2>
                 </Row>
-            </Card>
-        )
-    })
+                <Container className="mt-5 ms-5">
+                    <Form onSubmit={handleSubmit}>
+                        <Form.Group className="mb-4" controlId="taskTitle">
+                            <Form.Label>Task Title</Form.Label>
+                            <Form.Control
+                                type="text"
+                                placeholder="Make it short and simple (limited to 40 characters)"
+                                style={{ width: "500px" }}
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
+                            />
+                        </Form.Group>
 
+                        <Form.Group className="mb-4" controlId="taskDescription" >
+                            <Form.Label>Task Description</Form.Label>
+                            <Form.Control
+                                as="textarea"
+                                rows={7}
+                                style={{ width: "800px" }}
+                                value={content}
+                                onChange={(e) => setContent(e.target.value)}
+                            />
+                        </Form.Group>
+                        <Row>
+                            <Col lg={4}>
+                                <Form.Group className="mb-4" controlId="startDate" >
+                                    <Form.Label>Start Date</Form.Label>
+                                    <br />
+                                    <DatePicker
+                                        value={startDate}
+                                        onChange={(e) => setStartDate(e)} />
+                                </Form.Group>
+                            </Col>
+                            <Col lg={8}>
+                                <Form.Group className="mb-4" controlId="endDate" >
+                                    <Form.Label>End Date</Form.Label>
+                                    <br />
+                                    <DatePicker
+                                        value={endDate}
+                                        onChange={(e) => setEndDate(e)} />
+                                </Form.Group>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col lg={4}>
+                                <Form.Group className="mb-4" controlId="status" >
+                                    <Form.Label>Status</Form.Label>
+                                    <br />
+                                    <Select
+                                        defaultValue="pending"
+                                        style={{ width: "258px" }}
+                                        onChange={(e, value) => setStatus(value)}
+                                    >
+                                        <Option value="pending">Pending</Option>
+                                        <Option value="progress">Progress</Option>
+                                    </Select>
+                                </Form.Group>
+                            </Col>
+                            <Col lg={8}>
+                                <Form.Group className="mb-4" controlId="urgent" >
+                                    <Checkbox
+                                        className="pt-5"
+                                        label="Mark as Urgent"
+                                        size="md"
+                                        variant="outlined"
+                                        checked={urgent}
+                                        onChange={(e) => setUrgent(e.target.checked)}
+                                    />
+                                </Form.Group>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col lg={4}>
+                                <Form.Group className="mb-4" controlId="assignee" >
+                                    <Form.Label>Assignee</Form.Label>
+                                    <br />
+                                    <Select
+                                        defaultValue="test@email.com"
+                                        style={{ width: "258px" }}
+                                        onChange={(e, value) => setAssignee(value)}
+                                    >
+                                        <Option value="test@email.com">test@email.com</Option>
+                                        <Option value="test-2@email.com">test-2@email.com</Option>
+                                    </Select>
+                                </Form.Group>
+                            </Col>
+                            <Col lg={4}>
+                                <Form.Group className="mb-4 mt-2" controlId="colorTag" >
+                                    <MuiColorInput
+                                        className="pt-4"
+                                        format="hex"
+                                        size="small"
+                                        value={colorTag}
+                                        onChange={(e) => setColorTag(e)} />
+                                </Form.Group>
+                            </Col>
+                        </Row>
+                        <Button className="mt-3" variant="outline-success" type="submit">Create</Button>
+                    </Form>
+                </Container>
+            </Drawer>
+        </>
+    );
 }
