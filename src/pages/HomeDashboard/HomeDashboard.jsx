@@ -7,7 +7,7 @@ import AddCircleOutlineRoundedIcon from '@mui/icons-material/AddCircleOutlineRou
 
 import { AuthContext } from "../../components/AuthProvider";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAllTaskByUser } from "../../components/tadelSlice";
+import { addNewTaskByUser, fetchAllTaskByUser } from "../../components/tadelSlice";
 import CardTemplate from "./components/CardTemplate";
 import { Checkbox, Drawer, Option, Select } from "@mui/joy";
 import { DatePicker } from "@mui/x-date-pickers";
@@ -29,15 +29,11 @@ export default function HomeDashboard() {
             return
         }
 
-        console.log(currentUser.uid)
-
         dispatch(fetchAllTaskByUser(currentUser.uid))
 
     }, [currentUser, navigate, dispatch])
 
     const allTasks = useSelector((state) => state.tasks.tasks)
-
-    console.log(allTasks)
 
     return (
         <>
@@ -99,16 +95,24 @@ export default function HomeDashboard() {
 
 function AddTaskDrawer({ showAddDrawer, setShowAddDrawer }) {
 
+    const originator = auth.currentUser?.email;
+
     const [title, setTitle] = useState("")
     const [content, setContent] = useState("")
     const [status, setStatus] = useState("pending")
     const [startDate, setStartDate] = useState(null)
     const [endDate, setEndDate] = useState(null)
     const [urgent, setUrgent] = useState(false)
-    const [assignee, setAssignee] = useState("test@email.com")
+    const [assignee, setAssignee] = useState(originator)
     const [colorTag, setColorTag] = useState("")
 
-    const originator = auth.currentUser?.email;
+    const startTaskDate = new Date(startDate)
+    const convertedStartTaskDate = `${startTaskDate.getFullYear()}-${startTaskDate.getMonth() + 1}-${startTaskDate.getDate()}`;
+
+    const endTaskDate = new Date(endDate)
+    const convertedEndTaskDate = `${endTaskDate.getFullYear()}-${endTaskDate.getMonth() + 1}-${endTaskDate.getDate()}`;
+
+    const dispatch = useDispatch();
 
     function handleSubmit(e) {
         e.preventDefault();
@@ -117,14 +121,26 @@ function AddTaskDrawer({ showAddDrawer, setShowAddDrawer }) {
             title,
             content,
             status,
-            start_date: startDate,
-            end_date: endDate,
+            start_date: convertedStartTaskDate,
+            end_date: convertedEndTaskDate,
             urgent,
             assignee,
-            originator
+            originator,
+            color_tag: colorTag
         }
 
-        console.log(newTaskData)
+        dispatch(addNewTaskByUser(newTaskData))
+
+        setShowAddDrawer(false);
+
+        setTitle("");
+        setContent("");
+        setStatus("pending");
+        setStartDate(null);
+        setEndDate(null);
+        setUrgent(false);
+        setAssignee(originator);
+        setColorTag("");
     }
 
     return (

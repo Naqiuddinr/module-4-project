@@ -23,15 +23,30 @@ export const fetchAllTaskByUser = createAsyncThunk(
     "tasks/fetchAllTaskByUser",
     async (firebase_uid) => {
 
-        console.log(firebase_uid)
-
         const response = await axios.get(`${API_URL}/tasks/${firebase_uid}`);
 
-        console.log(response)
         return response.data;
 
     }
 )
+
+//ASYNC THUNK TO ADD NEW TASK BY A USER
+
+export const addNewTaskByUser = createAsyncThunk(
+    "tasks/addNewTaskByUser",
+    async (newTaskData) => {
+
+        const response = await axios.post(`${API_URL}/tasks`, newTaskData);
+
+        console.log(response.data)
+        return response.data;
+
+    }
+)
+
+
+///////////////////////////////////////////////////////////////
+/////////////////////////// SLICES ////////////////////////////
 
 const tasksSlice = createSlice({
     name: "tasks",
@@ -39,6 +54,9 @@ const tasksSlice = createSlice({
     extraReducers: (builder) => {
         builder.addCase(fetchAllTaskByUser.fulfilled, (state, action) => {
             state.tasks = action.payload;
+        })
+        builder.addCase(addNewTaskByUser.fulfilled, (state, action) => {
+            state.tasks = [...state.tasks, action.payload];
         })
     }
 })
