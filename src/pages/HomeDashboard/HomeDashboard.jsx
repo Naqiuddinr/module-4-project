@@ -108,7 +108,7 @@ function AddTaskDrawer({ showAddDrawer, setShowAddDrawer }) {
     const [assignee, setAssignee] = useState("test@email.com")
     const [colorTag, setColorTag] = useState("")
 
-    const originator = auth.currentUser.email;
+    const originator = auth.currentUser?.email;
 
     function handleSubmit(e) {
         e.preventDefault();
