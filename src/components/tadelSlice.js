@@ -44,6 +44,18 @@ export const addNewTaskByUser = createAsyncThunk(
     }
 )
 
+//ASYNC THUNK TO DELETE TASK BY TASK ID
+
+export const deleteTaskByTaskId = createAsyncThunk(
+    "tasks/deleteTaskByTaskId",
+    async (task_id) => {
+
+        await axios.delete(`${API_URL}/tasks/${task_id}`)
+
+        return { task_id }
+    }
+)
+
 
 ///////////////////////////////////////////////////////////////
 /////////////////////////// SLICES ////////////////////////////
@@ -57,6 +69,9 @@ const tasksSlice = createSlice({
         })
         builder.addCase(addNewTaskByUser.fulfilled, (state, action) => {
             state.tasks = [...state.tasks, action.payload];
+        })
+        builder.addCase(deleteTaskByTaskId.fulfilled, (state, action) => {
+            state.tasks = state.tasks.filter((task) => task.task_id !== action.payload.task_id);
         })
     }
 })

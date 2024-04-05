@@ -20,7 +20,7 @@ export default function AddTaskDrawer({ showAddDrawer, setShowAddDrawer }) {
     const [startDate, setStartDate] = useState(null)
     const [endDate, setEndDate] = useState(null)
     const [urgent, setUrgent] = useState(false)
-    const [assignee, setAssignee] = useState(originator)
+    const [assignee, setAssignee] = useState("")
     const [colorTag, setColorTag] = useState("")
 
     const startTaskDate = new Date(startDate)
@@ -46,6 +46,7 @@ export default function AddTaskDrawer({ showAddDrawer, setShowAddDrawer }) {
             color_tag: colorTag
         }
 
+        console.log(newTaskData.assignee)
         dispatch(addNewTaskByUser(newTaskData))
 
         setShowAddDrawer(false);
