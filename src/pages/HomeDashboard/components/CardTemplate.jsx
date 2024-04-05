@@ -1,8 +1,9 @@
 import { useNavigate } from "react-router-dom";
-import { auth } from "../../../firebase";
-import { Card, CardContent, Divider, Typography } from "@mui/material";
 import { Badge, Col, Row } from "react-bootstrap";
 import { motion } from "framer-motion";
+import { Card, CardContent, Divider, Typography } from "@mui/material";
+
+import { auth } from "../../../firebase";
 
 
 export default function CardTemplate({ allTasks, status }) {
@@ -26,7 +27,9 @@ export default function CardTemplate({ allTasks, status }) {
                             <CardContent>
                                 <h6>
                                     {data.title}
-                                    <Badge className="ms-4" pill bg="outline" style={{ backgroundColor: `${data.color_tag}`, color: `${data.color_tag}` }}>color tag</Badge>
+                                    <Typography variant="caption">
+                                        <Badge className="ms-4" pill bg="outline" style={{ backgroundColor: `${data.color_tag}`, color: `${data.color_tag}` }}>color tag</Badge>
+                                    </Typography>
                                     {data.urgent ? (
                                         <Badge className="ms-2" pill bg="danger">!</Badge>
                                     ) : ("")}
