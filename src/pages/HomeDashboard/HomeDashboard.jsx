@@ -109,6 +109,9 @@ function ViewTaskDialog({ selectedTask, showViewDialog, setShowViewDialog, setEd
         return;
     }
 
+    const { task_id } = selectedTask;
+    console.log(task_id)
+
     const handleClose = (event, reason) => {
         if (reason === 'clickaway') {
             return;
@@ -238,16 +241,15 @@ function ViewTaskDialog({ selectedTask, showViewDialog, setShowViewDialog, setEd
 function EditTaskDrawer({ showEditDrawer, setShowEditDrawer, editTaskData }) {
 
     const originator = auth.currentUser?.email;
-    const prevColor = editTaskData?.color_tag;
 
     const [title, setTitle] = useState(null)
     const [content, setContent] = useState(null)
-    const [status, setStatus] = useState(null)
+    const [status, setStatus] = useState("")
     const [startDate, setStartDate] = useState(null)
     const [endDate, setEndDate] = useState(null)
     const [urgent, setUrgent] = useState(false)
-    const [assignee, setAssignee] = useState(null)
-    const [colorTag, setColorTag] = useState(prevColor)
+    const [assignee, setAssignee] = useState("")
+    const [colorTag, setColorTag] = useState("")
 
     const dispatch = useDispatch();
     const [warningSnack, setWarningSnack] = useState(false)
@@ -266,33 +268,37 @@ function EditTaskDrawer({ showEditDrawer, setShowEditDrawer, editTaskData }) {
     function handleSubmit(e) {
         e.preventDefault();
 
-        if (!endDate) {
-
-            setWarningSnack(true);
-            console.log(endDate)
-            return
-        }
-
         const newEditedTaskData = {
             task_id: editTaskData.task_id,
-            title,
-            content,
-            status,
-            start_date: convertedStartTaskDate,
-            end_date: convertedEndTaskDate,
+            title: title === "" ? null : title,
+            content: content === "" ? null : content,
+            status: status === "" ? null : status,
+            start_date: startDate === null ? null : convertedStartTaskDate,
+            end_date: endDate === null ? null : convertedEndTaskDate,
             urgent,
-            assignee,
+            assignee: assignee === "" ? null : assignee,
             originator,
-            color_tag: colorTag
+            color_tag: colorTag === "" ? null : colorTag
         }
 
         console.log(newEditedTaskData)
+
+        setTitle("");
+        setContent("");
+        setStatus("");
+        setStartDate(null);
+        setEndDate(null);
+        setUrgent(false);
+        setAssignee("")
+        setColorTag("");
 
         dispatch(editTaskByTaskId(newEditedTaskData))
         setShowEditDrawer(false)
 
 
+
     }
+
 
     return (
         <>
@@ -331,7 +337,6 @@ function EditTaskDrawer({ showEditDrawer, setShowEditDrawer, editTaskData }) {
                                     <br />
                                     <DatePicker
                                         value={startDate}
-                                        placeholder={editTaskData.start_date}
                                         onChange={(e) => setStartDate(e)} />
                                 </Form.Group>
                             </Col>
@@ -351,9 +356,9 @@ function EditTaskDrawer({ showEditDrawer, setShowEditDrawer, editTaskData }) {
                                     <Form.Label>Status</Form.Label>
                                     <br />
                                     <Select
-                                        placeholder={editTaskData.status}
                                         style={{ width: "258px" }}
                                         onChange={(e, value) => setStatus(value)}
+                                        placeholder="Status"
                                     >
                                         <Option value="pending">Pending</Option>
                                         <Option value="progress">Progress</Option>
