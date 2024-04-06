@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { Checkbox, Drawer, Option, Select } from "@mui/joy";
+import { Alert, Snackbar } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import { MuiColorInput } from "mui-color-input";
 
@@ -20,7 +21,7 @@ export default function AddTaskDrawer({ showAddDrawer, setShowAddDrawer }) {
     const [startDate, setStartDate] = useState(null)
     const [endDate, setEndDate] = useState(null)
     const [urgent, setUrgent] = useState(false)
-    const [assignee, setAssignee] = useState("")
+    const [assignee, setAssignee] = useState(originator)
     const [colorTag, setColorTag] = useState("")
 
     const startTaskDate = new Date(startDate)
@@ -31,8 +32,16 @@ export default function AddTaskDrawer({ showAddDrawer, setShowAddDrawer }) {
 
     const dispatch = useDispatch();
 
+    const [warningSnack, setWarningSnack] = useState(false)
+
     function handleSubmit(e) {
         e.preventDefault();
+
+        if (!title || !convertedEndTaskDate) {
+
+            setWarningSnack(true);
+            return
+        }
 
         const newTaskData = {
             title,
@@ -106,7 +115,8 @@ export default function AddTaskDrawer({ showAddDrawer, setShowAddDrawer }) {
                                     <br />
                                     <DatePicker
                                         value={endDate}
-                                        onChange={(e) => setEndDate(e)} />
+                                        onChange={(e) => setEndDate(e)}
+                                    />
                                 </Form.Group>
                             </Col>
                         </Row>
@@ -116,7 +126,7 @@ export default function AddTaskDrawer({ showAddDrawer, setShowAddDrawer }) {
                                     <Form.Label>Status</Form.Label>
                                     <br />
                                     <Select
-                                        defaultValue="pending"
+                                        placeholder="Pending"
                                         style={{ width: "258px" }}
                                         onChange={(e, value) => setStatus(value)}
                                     >
@@ -144,9 +154,9 @@ export default function AddTaskDrawer({ showAddDrawer, setShowAddDrawer }) {
                                     <Form.Label>Assignee</Form.Label>
                                     <br />
                                     <Select
-                                        defaultValue="test@email.com"
+                                        placeholder={originator}
                                         style={{ width: "258px" }}
-                                        onChange={(e, value) => setAssignee(value)}
+                                        onChange={(e, newValue) => setAssignee(newValue)}
                                     >
                                         <Option value="test@email.com">test@email.com</Option>
                                         <Option value="test-2@email.com">test-2@email.com</Option>
@@ -168,6 +178,21 @@ export default function AddTaskDrawer({ showAddDrawer, setShowAddDrawer }) {
                     </Form>
                 </Container>
             </Drawer>
+            <Snackbar
+                open={warningSnack}
+                autoHideDuration={6000}
+                onClose={() => setWarningSnack(false)}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            >
+                <Alert
+                    onClose={() => setWarningSnack(false)}
+                    severity="warning"
+                    variant="filled"
+                    sx={{ width: '100%' }}
+                >
+                    Title and End Date are compulsory!
+                </Alert>
+            </Snackbar>
         </>
     );
 }

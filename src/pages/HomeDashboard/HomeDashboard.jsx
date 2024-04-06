@@ -8,7 +8,7 @@ import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 
 import { AuthContext } from "../../components/AuthProvider";
 import { auth } from "../../firebase";
-import { deleteTaskByTaskId, fetchAllTaskByUser } from "../../components/tadelSlice";
+import { deleteTaskByTaskId, editTaskByTaskId, fetchAllTaskByUser } from "../../components/tadelSlice";
 import CardTemplate from "./components/CardTemplate";
 import AddTaskDrawer from "./components/AddTaskDrawer";
 import { Checkbox, Drawer, Option, Select } from "@mui/joy";
@@ -31,6 +31,7 @@ export default function HomeDashboard() {
     const [showEditDrawer, setShowEditDrawer] = useState(false);
 
     function handleViewTask(data) {
+        console.log(data)
         setShowViewDialog(true);
         setSelectedTask(data)
     }
@@ -133,6 +134,14 @@ function ViewTaskDialog({ selectedTask, showViewDialog, setShowViewDialog, setEd
 
     function handleEditTask(selectedTask) {
 
+        const { originator } = selectedTask
+
+        if (originator !== auth.currentUser.email) {
+
+            setWarningSnack(true);
+            return
+        }
+
         setShowEditDrawer(true);
         setEditTaskData(selectedTask);
         setShowViewDialog(false);
@@ -210,7 +219,7 @@ function ViewTaskDialog({ selectedTask, showViewDialog, setShowViewDialog, setEd
                 open={warningSnack}
                 autoHideDuration={6000}
                 onClose={handleClose}
-                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
             >
                 <Alert
                     onClose={handleClose}
@@ -240,6 +249,8 @@ function EditTaskDrawer({ showEditDrawer, setShowEditDrawer, editTaskData }) {
     const [assignee, setAssignee] = useState(editTaskData?.assignee)
     const [colorTag, setColorTag] = useState(editTaskData?.color_tag)
 
+    const dispatch = useDispatch();
+
     if (editTaskData === null) {
         return;
     }
@@ -255,6 +266,7 @@ function EditTaskDrawer({ showEditDrawer, setShowEditDrawer, editTaskData }) {
         e.preventDefault();
 
         const newEditedTaskData = {
+            task_id: editTaskData.task_id,
             title,
             content,
             status,
@@ -266,8 +278,7 @@ function EditTaskDrawer({ showEditDrawer, setShowEditDrawer, editTaskData }) {
             color_tag: colorTag
         }
 
-        console.log(newEditedTaskData);
-        console.log(editTaskData.task_id)
+        dispatch(editTaskByTaskId(newEditedTaskData))
         setShowEditDrawer(false);
 
     }
@@ -329,12 +340,13 @@ function EditTaskDrawer({ showEditDrawer, setShowEditDrawer, editTaskData }) {
                                     <Form.Label>Status</Form.Label>
                                     <br />
                                     <Select
-                                        defaultValue={editTaskData.status}
+                                        placeholder={editTaskData.status}
                                         style={{ width: "258px" }}
                                         onChange={(e, value) => setStatus(value)}
                                     >
                                         <Option value="pending">Pending</Option>
                                         <Option value="progress">Progress</Option>
+                                        <Option value="completed">Completed</Option>
                                     </Select>
                                 </Form.Group>
                             </Col>
@@ -357,7 +369,7 @@ function EditTaskDrawer({ showEditDrawer, setShowEditDrawer, editTaskData }) {
                                     <Form.Label>Assignee</Form.Label>
                                     <br />
                                     <Select
-                                        defaultValue={editTaskData.assignee}
+                                        placeholder={editTaskData.assignee}
                                         style={{ width: "258px" }}
                                         onChange={(e, value) => setAssignee(value)}
                                     >
@@ -378,7 +390,7 @@ function EditTaskDrawer({ showEditDrawer, setShowEditDrawer, editTaskData }) {
                                 </Form.Group>
                             </Col>
                         </Row>
-                        <Button className="mt-3" variant="outline-success" type="submit">Create</Button>
+                        <Button className="mt-3" variant="warning" type="submit">Save</Button>
                     </Form>
                 </Container>
             </Drawer>

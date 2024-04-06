@@ -56,6 +56,22 @@ export const deleteTaskByTaskId = createAsyncThunk(
     }
 )
 
+//ASYNC THUNK TO EDIT TASK BY TASK ID
+
+export const editTaskByTaskId = createAsyncThunk(
+    "tasks/editTaskByTaskId",
+    async (newEditedTaskData) => {
+
+        const { task_id } = newEditedTaskData;
+
+        const response = await axios.put(`${API_URL}/tasks/${task_id}`, newEditedTaskData);
+
+        console.log(response.data)
+        return response.data;
+
+    }
+)
+
 
 ///////////////////////////////////////////////////////////////
 /////////////////////////// SLICES ////////////////////////////
@@ -72,6 +88,13 @@ const tasksSlice = createSlice({
         })
         builder.addCase(deleteTaskByTaskId.fulfilled, (state, action) => {
             state.tasks = state.tasks.filter((task) => task.task_id !== action.payload.task_id);
+        })
+        builder.addCase(editTaskByTaskId.fulfilled, (state, action) => {
+            const editedTask = action.payload;
+            const index = state.tasks.findIndex(task => task.task_id === editedTask.task_id);
+            if (index !== -1) {
+                state.tasks[index] = editedTask
+            }
         })
     }
 })

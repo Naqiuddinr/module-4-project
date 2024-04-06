@@ -17,13 +17,13 @@ export default function CardTemplate({ allTasks, status, handleViewTask }) {
         return null; // Returning null to prevent rendering while redirecting
     }
 
-    return allTasks.filter((task) => task.status === status && task.originator === currentUser.email).map((data) => {
+    return allTasks.filter((task) => (task.originator === currentUser.email || task.assignee === currentUser.email) && task.status === status).map((data) => {
 
         return (
             <>
                 <Row className="px-3" key={data.task_id} >
                     <motion.div whileHover={{ scale: 1.075 }} whileTap={{ scale: 0.9 }}>
-                        <Card className="mb-4" elevation={2} onClick={() => handleViewTask(data)} style={{ cursor: "pointer" }}>
+                        <Card key={data.task_id} className="mb-4" elevation={2} onClick={() => handleViewTask(data)} style={{ cursor: "pointer" }}>
                             <CardContent>
                                 <h6 className="d-flex align-items-center">
                                     {data.title}
