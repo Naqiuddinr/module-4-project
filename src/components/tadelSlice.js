@@ -67,7 +67,7 @@ export const editTaskByTaskId = createAsyncThunk(
         const response = await axios.put(`${API_URL}/tasks/${task_id}`, newEditedTaskData);
 
         console.log(response.data)
-        return response.data;
+        return response.data[0];
 
     }
 )

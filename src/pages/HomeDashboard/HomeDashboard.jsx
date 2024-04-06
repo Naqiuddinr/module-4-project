@@ -8,7 +8,7 @@ import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 
 import { AuthContext } from "../../components/AuthProvider";
 import { auth } from "../../firebase";
-import { deleteTaskByTaskId, editTaskByTaskId, fetchAllTaskByUser } from "../../components/tadelSlice";
+import { addNewTaskByUser, deleteTaskByTaskId, editTaskByTaskId, fetchAllTaskByUser } from "../../components/tadelSlice";
 import CardTemplate from "./components/CardTemplate";
 import AddTaskDrawer from "./components/AddTaskDrawer";
 import { Checkbox, Drawer, Option, Select } from "@mui/joy";
@@ -31,7 +31,6 @@ export default function HomeDashboard() {
     const [showEditDrawer, setShowEditDrawer] = useState(false);
 
     function handleViewTask(data) {
-        console.log(data)
         setShowViewDialog(true);
         setSelectedTask(data)
     }
@@ -239,17 +238,19 @@ function ViewTaskDialog({ selectedTask, showViewDialog, setShowViewDialog, setEd
 function EditTaskDrawer({ showEditDrawer, setShowEditDrawer, editTaskData }) {
 
     const originator = auth.currentUser?.email;
+    const prevColor = editTaskData?.color_tag;
 
-    const [title, setTitle] = useState(editTaskData?.title)
-    const [content, setContent] = useState(editTaskData?.content)
-    const [status, setStatus] = useState(editTaskData?.status)
+    const [title, setTitle] = useState(null)
+    const [content, setContent] = useState(null)
+    const [status, setStatus] = useState(null)
     const [startDate, setStartDate] = useState(null)
     const [endDate, setEndDate] = useState(null)
-    const [urgent, setUrgent] = useState(editTaskData?.urgent)
-    const [assignee, setAssignee] = useState(editTaskData?.assignee)
-    const [colorTag, setColorTag] = useState(editTaskData?.color_tag)
+    const [urgent, setUrgent] = useState(false)
+    const [assignee, setAssignee] = useState(null)
+    const [colorTag, setColorTag] = useState(prevColor)
 
     const dispatch = useDispatch();
+    const [warningSnack, setWarningSnack] = useState(false)
 
     if (editTaskData === null) {
         return;
@@ -265,6 +266,13 @@ function EditTaskDrawer({ showEditDrawer, setShowEditDrawer, editTaskData }) {
     function handleSubmit(e) {
         e.preventDefault();
 
+        if (!endDate) {
+
+            setWarningSnack(true);
+            console.log(endDate)
+            return
+        }
+
         const newEditedTaskData = {
             task_id: editTaskData.task_id,
             title,
@@ -278,8 +286,11 @@ function EditTaskDrawer({ showEditDrawer, setShowEditDrawer, editTaskData }) {
             color_tag: colorTag
         }
 
+        console.log(newEditedTaskData)
+
         dispatch(editTaskByTaskId(newEditedTaskData))
-        setShowEditDrawer(false);
+        setShowEditDrawer(false)
+
 
     }
 
@@ -386,7 +397,7 @@ function EditTaskDrawer({ showEditDrawer, setShowEditDrawer, editTaskData }) {
                                         size="small"
                                         placeholder={editTaskData.color_tag}
                                         value={colorTag}
-                                        onChange={(e) => setColorTag(e)} />
+                                        onChange={(color) => setColorTag(color)} />
                                 </Form.Group>
                             </Col>
                         </Row>
@@ -394,6 +405,21 @@ function EditTaskDrawer({ showEditDrawer, setShowEditDrawer, editTaskData }) {
                     </Form>
                 </Container>
             </Drawer>
+            <Snackbar
+                open={warningSnack}
+                autoHideDuration={6000}
+                onClose={() => setWarningSnack(false)}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            >
+                <Alert
+                    onClose={() => setWarningSnack(false)}
+                    severity="warning"
+                    variant="filled"
+                    sx={{ width: '100%' }}
+                >
+                    End Date must be filled again!
+                </Alert>
+            </Snackbar>
         </>
     );
 }

@@ -37,9 +37,10 @@ export default function AddTaskDrawer({ showAddDrawer, setShowAddDrawer }) {
     function handleSubmit(e) {
         e.preventDefault();
 
-        if (!title || !convertedEndTaskDate) {
+        if (!title || !endDate) {
 
             setWarningSnack(true);
+            console.log(endDate)
             return
         }
 
