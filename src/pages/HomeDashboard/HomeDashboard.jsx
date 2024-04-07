@@ -8,7 +8,7 @@ import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 
 import { AuthContext } from "../../components/AuthProvider";
 import { auth } from "../../firebase";
-import { addNewTaskByUser, deleteTaskByTaskId, editTaskByTaskId, fetchAllTaskByUser } from "../../components/tadelSlice";
+import { deleteTaskByTaskId, editTaskByTaskId, fetchAllTaskByUser } from "../../components/tadelSlice";
 import CardTemplate from "./components/CardTemplate";
 import AddTaskDrawer from "./components/AddTaskDrawer";
 import { Checkbox, Drawer, Option, Select } from "@mui/joy";
@@ -294,8 +294,6 @@ function EditTaskDrawer({ showEditDrawer, setShowEditDrawer, editTaskData }) {
 
         dispatch(editTaskByTaskId(newEditedTaskData))
         setShowEditDrawer(false)
-
-
 
     }
 
