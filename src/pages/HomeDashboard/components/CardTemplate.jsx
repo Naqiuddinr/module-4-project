@@ -24,12 +24,10 @@ export default function CardTemplate({ allTasks, status, handleViewTask }) {
                 <Row className="px-3" key={data.task_id} >
                     <motion.div whileHover={{ scale: 1.075 }} whileTap={{ scale: 0.9 }}>
                         <Card key={data.task_id} className="mb-4" elevation={2} onClick={() => handleViewTask(data)} style={{ cursor: "pointer" }}>
+                            <div style={{ color: `${data.color_tag}`, backgroundColor: `${data.color_tag}`, height: "10px" }}></div>
                             <CardContent>
                                 <h6 className="d-flex align-items-center">
                                     {data.title}
-                                    <Typography variant="caption">
-                                        <Badge className="ms-4" pill bg="outline" style={{ backgroundColor: `${data.color_tag}`, color: `${data.color_tag}` }}>color tag</Badge>
-                                    </Typography>
                                     {data.urgent ? (
                                         <Badge className="ms-2" pill bg="danger">!</Badge>
                                     ) : ("")}
