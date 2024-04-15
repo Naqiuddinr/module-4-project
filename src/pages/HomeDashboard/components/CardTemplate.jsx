@@ -6,6 +6,7 @@ import { Card, CardContent, Divider, Typography } from "@mui/material";
 import { auth } from "../../../firebase";
 
 
+
 export default function CardTemplate({ allTasks, status, handleViewTask }) {
 
     const currentUser = auth.currentUser;
@@ -24,7 +25,7 @@ export default function CardTemplate({ allTasks, status, handleViewTask }) {
                 <Row className="px-3" key={data.task_id} >
                     <motion.div whileHover={{ scale: 1.075 }} whileTap={{ scale: 0.9 }}>
                         <Card key={data.task_id} className="mb-4" elevation={2} onClick={() => handleViewTask(data)} style={{ cursor: "pointer" }}>
-                            <div style={{ color: `${data.color_tag}`, backgroundColor: `${data.color_tag}`, height: "10px" }}></div>
+                            <div style={{ backgroundColor: `${data.color_tag}`, height: "10px" }}></div>
                             <CardContent>
                                 <h6 className="d-flex align-items-center">
                                     {data.title}

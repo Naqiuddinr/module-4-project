@@ -1,5 +1,7 @@
 import { combineReducers, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import { storage } from "../firebase";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 
 const API_URL = import.meta.env.VITE_TADEL_API_URL;
@@ -36,10 +38,63 @@ export const addNewTaskByUser = createAsyncThunk(
     "tasks/addNewTaskByUser",
     async (newTaskData) => {
 
-        const response = await axios.post(`${API_URL}/tasks`, newTaskData);
+        const {
+            title,
+            content,
+            status,
+            end_date,
+            urgent,
+            assignee,
+            originator,
+            color_tag,
+            fileUpload
+        } = newTaskData
 
-        console.log(response.data)
-        return response.data;
+        console.log(newTaskData)
+
+        if (fileUpload === "") {
+            const fileurl = null;
+
+            const convertedData = {
+                title,
+                content,
+                status,
+                end_date,
+                urgent,
+                assignee,
+                originator,
+                color_tag,
+                fileurl
+            }
+
+            const response = await axios.post(`${API_URL}/tasks`, convertedData);
+
+            console.log(response.data)
+            return response.data;
+
+        } else {
+
+            const storeRef = ref(storage, `tasks/${fileUpload.name}`);
+            const fileResponse = await uploadBytes(storeRef, fileUpload);
+            const fileurl = await getDownloadURL(fileResponse.ref);
+
+            const convertedData = {
+                title,
+                content,
+                status,
+                end_date,
+                urgent,
+                assignee,
+                originator,
+                color_tag,
+                fileurl
+            }
+
+            const response = await axios.post(`${API_URL}/tasks`, convertedData);
+
+            return response.data;
+
+        }
 
     }
 )
@@ -62,12 +117,66 @@ export const editTaskByTaskId = createAsyncThunk(
     "tasks/editTaskByTaskId",
     async (newEditedTaskData) => {
 
-        const { task_id } = newEditedTaskData;
+        const {
+            task_id,
+            title,
+            content,
+            status,
+            end_date,
+            urgent,
+            assignee,
+            originator,
+            color_tag,
+            fileUpload
+        } = newEditedTaskData;
 
-        const response = await axios.put(`${API_URL}/tasks/${task_id}`, newEditedTaskData);
+        console.log(newEditedTaskData)
 
-        console.log(response.data)
-        return response.data[0];
+        if (fileUpload === null) {
+            const fileurl = null;
+
+            const convertedData = {
+                task_id,
+                title,
+                content,
+                status,
+                end_date,
+                urgent,
+                assignee,
+                originator,
+                color_tag,
+                fileurl
+            }
+
+            const response = await axios.put(`${API_URL}/tasks/${task_id}`, convertedData);
+
+            console.log(response.data)
+            return response.data[0];
+
+        } else {
+
+            const storeRef = ref(storage, `tasks/${fileUpload.name}`);
+            const fileResponse = await uploadBytes(storeRef, fileUpload);
+            const fileurl = await getDownloadURL(fileResponse.ref);
+
+            const convertedData = {
+                task_id,
+                title,
+                content,
+                status,
+                end_date,
+                urgent,
+                assignee,
+                originator,
+                color_tag,
+                fileurl
+            }
+
+            const response = await axios.put(`${API_URL}/tasks/${task_id}`, convertedData);
+
+            console.log(response.data)
+            return response.data[0];
+        }
 
     }
 )
