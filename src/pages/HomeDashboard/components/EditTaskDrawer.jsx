@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { Checkbox, Drawer, Option, Select } from "@mui/joy";
 import { DatePicker } from "@mui/x-date-pickers";
@@ -36,6 +36,7 @@ export function EditTaskDrawer({ showEditDrawer, setShowEditDrawer, editTaskData
 
 
     const dispatch = useDispatch();
+    const members = useSelector((state) => state.team.team)
     const [warningSnack, setWarningSnack] = useState(false)
 
     const handleFileUpload = (e) => {
@@ -51,14 +52,6 @@ export function EditTaskDrawer({ showEditDrawer, setShowEditDrawer, editTaskData
 
     const handleCloseEditDrawer = () => {
         setShowEditDrawer(false);
-        setTitle("");
-        setContent("")
-        setStatus("");
-        setUrgent(false);
-        setAssignee("")
-        setColorTag("");
-        setEndDate(null);
-        setFileUpload("");
     }
 
     function handleSubmit(e) {
@@ -175,8 +168,10 @@ export function EditTaskDrawer({ showEditDrawer, setShowEditDrawer, editTaskData
                                         style={{ width: "258px" }}
                                         onChange={(e, value) => setAssignee(value)}
                                     >
-                                        <Option value="test@email.com">test@email.com</Option>
-                                        <Option value="test-2@email.com">test-2@email.com</Option>
+                                        <Option value={originator}>{originator}</Option>
+                                        {members.map((member) => (
+                                            <Option key={member.team_member} value={member.team_member}>{member.team_member}</Option>
+                                        ))}
                                     </Select>
                                 </Form.Group>
                             </Col>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { Checkbox, Drawer, Option, Select } from "@mui/joy";
 import { Alert, Snackbar } from "@mui/material";
@@ -72,6 +72,8 @@ export default function AddTaskDrawer({ showAddDrawer, setShowAddDrawer }) {
         setColorTag("");
         setFileUpload("");
     }
+
+    const members = useSelector((state) => state.team.team)
 
     return (
         <>
@@ -161,17 +163,16 @@ export default function AddTaskDrawer({ showAddDrawer, setShowAddDrawer }) {
                                 <Form.Group className="mb-4" controlId="assignee" >
                                     <Form.Label>Assignee</Form.Label>
                                     <br />
-                                    <Form.Select
-                                        placeholder={originator}
+                                    <Select
+                                        placeholder="Select Assignee"
                                         style={{ width: "258px" }}
-                                        onChange={(e) => setAssignee(e.target.value)}
+                                        onChange={(e, value) => setAssignee(value)}
                                     >
-                                        {/* {sampleTeam.map((team) => (
-                                            <option key={team.id} value={team.member}>{team.member}</option>
-                                        ))} */}
-                                        <option value="test@email.com">test@email.com</option>
-                                        <option value="test-2@email.com">test-2@email.com</option>
-                                    </Form.Select>
+                                        <Option value={originator}>{originator}</Option>
+                                        {members.map((member) => (
+                                            <Option key={member.team_member} value={member.team_member}>{member.team_member}</Option>
+                                        ))}
+                                    </Select>
                                 </Form.Group>
                             </Col>
                             <Col lg={4}>

@@ -1,4 +1,4 @@
-import { Card, Fab } from "@mui/material";
+import { Fab } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
@@ -41,6 +41,7 @@ export default function HomeDashboard() {
 
         dispatch(fetchAllTaskByUser(currentUser.uid))
 
+
     }, [currentUser, navigate, dispatch])
 
     const allTasks = useSelector((state) => state.tasks.tasks)
@@ -49,7 +50,7 @@ export default function HomeDashboard() {
         <>
             <Container className="mb-4" style={{ borderBottom: "1px solid #BDBDBD", position: "relative", overflowX: "hidden" }}>
                 <Row className="my-5 justify-content-center">
-                    <Col md={4}>
+                    {/* <Col md={4}>
                         <Card>
                             This wall have a small calender or weather forecast?
                         </Card>
@@ -63,7 +64,8 @@ export default function HomeDashboard() {
                         <Card>
                             Show the team members progress
                         </Card>
-                    </Col>
+                    </Col> */}
+                    <h1>My Dashboard</h1>
                 </Row>
             </Container>
             <Row className="justify-content-center">

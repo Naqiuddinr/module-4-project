@@ -19,6 +19,32 @@ export const sendUserDataToBackend = createAsyncThunk(
     }
 )
 
+
+//ASYNC THUNK TO FETCH ALL TEAM MEMBERS OF USERS FROM DATABASE
+
+export const fetchAllTeamByUser = createAsyncThunk(
+    "team/fetchAllTeamByUser",
+    async (originator) => {
+
+        const response = await axios.get(`${API_URL}/team`, { params: { originator: originator } });
+
+        return response.data;
+
+    }
+)
+
+//ASYNC THUNK TO ADD NEW TEAM MEMBER BY A USER
+
+export const addNewTeamMember = createAsyncThunk(
+    "team/addNewTeamMember",
+    async (newMemberInfo) => {
+
+        const response = await axios.post(`${API_URL}/team`, newMemberInfo);
+
+        return response.data[0]
+    }
+)
+
 //ASYNC THUNK TO FETCH ALL TASK ACCORDING TO CURRENT USER
 
 export const fetchAllTaskByUser = createAsyncThunk(
@@ -50,8 +76,6 @@ export const addNewTaskByUser = createAsyncThunk(
             fileUpload
         } = newTaskData
 
-        console.log(newTaskData)
-
         if (fileUpload === "") {
             const fileurl = null;
 
@@ -69,7 +93,6 @@ export const addNewTaskByUser = createAsyncThunk(
 
             const response = await axios.post(`${API_URL}/tasks`, convertedData);
 
-            console.log(response.data)
             return response.data;
 
         } else {
@@ -130,8 +153,6 @@ export const editTaskByTaskId = createAsyncThunk(
             fileUpload
         } = newEditedTaskData;
 
-        console.log(newEditedTaskData)
-
         if (fileUpload === null) {
             const fileurl = null;
 
@@ -150,7 +171,6 @@ export const editTaskByTaskId = createAsyncThunk(
 
             const response = await axios.put(`${API_URL}/tasks/${task_id}`, convertedData);
 
-            console.log(response.data)
             return response.data[0];
 
         } else {
@@ -174,7 +194,6 @@ export const editTaskByTaskId = createAsyncThunk(
 
             const response = await axios.put(`${API_URL}/tasks/${task_id}`, convertedData);
 
-            console.log(response.data)
             return response.data[0];
         }
 
@@ -208,8 +227,22 @@ const tasksSlice = createSlice({
     }
 })
 
-const rootReducer = combineReducers({
-    tasks: tasksSlice.reducer
+const teamSlice = createSlice({
+    name: "team",
+    initialState: { team: [] },
+    extraReducers: (builder) => {
+        builder.addCase(fetchAllTeamByUser.fulfilled, (state, action) => {
+            state.team = action.payload;
+        })
+        builder.addCase(addNewTeamMember.fulfilled, (state, action) => {
+            state.team = [action.payload, ...state.team];
+        })
+    }
 })
 
-export { tasksSlice, rootReducer };
+const rootReducer = combineReducers({
+    tasks: tasksSlice.reducer,
+    team: teamSlice.reducer
+})
+
+export { tasksSlice, teamSlice, rootReducer };
