@@ -107,7 +107,7 @@ export default function AuthPage() {
             <Container className="p-5 mt-5">
                 <Row>
                     <Col sm={7} className="d-flex align-items-center justify-content-center">
-                        <Image src="src\assets\16897435-removebg-preview.png" style={{ height: "200px" }} />
+                        <Image src="src\components\16897435-removebg-preview.png" style={{ height: "200px" }} />
                         {toggleAuth === "login" ? (
                             <h2>Tadel, where delegating tasks is no longer a task</h2>
                         ) : (
