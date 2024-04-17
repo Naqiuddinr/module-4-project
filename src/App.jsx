@@ -44,7 +44,7 @@ function Layout() {
                 <Container>
                     <Navbar.Brand href="/" className="d-inline-block align-top">
                         <Image
-                            src="src\assets\16897435-removebg-preview.png"
+                            src="https://firebasestorage.googleapis.com/v0/b/tadel-app.appspot.com/o/tasks%2F16897435-removebg-preview.png?alt=media&token=4ab1ad38-c639-4936-a0b9-e751aaaa108a"
                             width="30"
                             height="30"
                             className="d-inline-block align-top"
