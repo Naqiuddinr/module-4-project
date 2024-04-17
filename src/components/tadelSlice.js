@@ -45,6 +45,20 @@ export const addNewTeamMember = createAsyncThunk(
     }
 )
 
+//ASYNC THUNK TO DELETE A TEAM MEMBER BY MEMBER ID
+
+export const deleteTeamMemberById = createAsyncThunk(
+    "team/deleteTeamMemberById",
+    async (member_id) => {
+
+        console.log(member_id)
+
+        await axios.delete(`${API_URL}/team/${member_id}`);
+
+        return { member_id };
+    }
+)
+
 //ASYNC THUNK TO FETCH ALL TASK ACCORDING TO CURRENT USER
 
 export const fetchAllTaskByUser = createAsyncThunk(
@@ -236,6 +250,9 @@ const teamSlice = createSlice({
         })
         builder.addCase(addNewTeamMember.fulfilled, (state, action) => {
             state.team = [action.payload, ...state.team];
+        })
+        builder.addCase(deleteTeamMemberById.fulfilled, (state, action) => {
+            state.team = state.team.filter((member) => member.member_id !== action.payload.member_id);
         })
     }
 })

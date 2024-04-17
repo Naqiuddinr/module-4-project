@@ -21,8 +21,8 @@ import AccordionSummary, { accordionSummaryClasses } from '@mui/joy/AccordionSum
 import AddIcon from '@mui/icons-material/Add';
 import { useSelector } from "react-redux";
 import axios from "axios";
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
-import { addNewTeamMember, fetchAllTeamByUser } from "./components/tadelSlice";
+import { Alert, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Snackbar } from "@mui/material";
+import { addNewTeamMember, deleteTeamMemberById, fetchAllTeamByUser } from "./components/tadelSlice";
 
 
 function Layout() {
@@ -142,6 +142,39 @@ function ViewProfileDrawer({ showProfileDrawer, setShowProfileDrawer }) {
 
     }
 
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+    const [memberToDelete, setMemberToDelete] = useState(null)
+
+    function openDeleteDialog({ member }) {
+        setShowDeleteDialog(true);
+        setMemberToDelete(member)
+    }
+
+
+    function handleDeleteMember(member_id) {
+
+        dispatch(deleteTeamMemberById(member_id))
+        setShowDeleteDialog(false);
+
+    }
+
+    const [inviteSnack, setInviteSnack] = useState(false)
+
+    async function handleSendInvite(memberEmail) {
+
+        const inviteData = {
+            email: memberEmail,
+            originator: currentUser?.email
+        }
+
+        console.log(inviteData)
+
+        await axios.post(`${API_URL}/team/invite`, inviteData)
+        handleClose();
+        setInviteSnack(true)
+
+    }
+
     return (
         <>
             <Drawer size="md" open={showProfileDrawer} onClose={() => setShowProfileDrawer(false)}>
@@ -194,7 +227,7 @@ function ViewProfileDrawer({ showProfileDrawer, setShowProfileDrawer }) {
                         <Col className="d-flex justify-content-end me-2">
                             <b
                                 style={{ cursor: "pointer" }}
-                                onClick={() => console.log(`This is ${member.member_id}`)}
+                                onClick={() => openDeleteDialog({ member })}
                             >x</b>
                         </Col>
                     </Row>
@@ -240,13 +273,49 @@ function ViewProfileDrawer({ showProfileDrawer, setShowProfileDrawer }) {
                         </>
                     ) : (
                         <>
-                            <Button variant="outline-warning" onClick={handleClose}>Send</Button>
+                            <Button variant="outline-warning" onClick={() => handleSendInvite(memberEmail)}>Send</Button>
                             <Button variant="outline-secondary" onClick={handleClose}>Back</Button>
                         </>
 
                     )}
                 </DialogActions>
             </Dialog>
+            <Dialog
+                open={showDeleteDialog}
+                onClose={() => setShowDeleteDialog(false)}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">
+                    Delete Confirmation
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        Please confirm if you would like to remove {memberToDelete?.team_member} from your team
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <>
+                        <Button variant="outline-danger" onClick={() => handleDeleteMember(memberToDelete.member_id)}>Remove</Button>
+                        <Button variant="outline-secondary" onClick={() => setShowDeleteDialog(false)}>Back</Button>
+                    </>
+                </DialogActions>
+            </Dialog>
+            <Snackbar
+                open={inviteSnack}
+                autoHideDuration={3000}
+                onClose={() => setInviteSnack(false)}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert
+                    onClose={() => setInviteSnack(false)}
+                    severity="success"
+                    variant="filled"
+                    sx={{ width: '100%' }}
+                >
+                    Invitation email sent!
+                </Alert>
+            </Snackbar>
         </>
     )
 }

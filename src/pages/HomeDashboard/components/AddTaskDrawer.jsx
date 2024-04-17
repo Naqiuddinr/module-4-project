@@ -65,10 +65,10 @@ export default function AddTaskDrawer({ showAddDrawer, setShowAddDrawer }) {
 
         setTitle("");
         setContent("");
-        setStatus("pending");
+        setStatus("");
         setEndDate(null);
         setUrgent(false);
-        setAssignee(originator);
+        setAssignee("");
         setColorTag("");
         setFileUpload("");
     }
