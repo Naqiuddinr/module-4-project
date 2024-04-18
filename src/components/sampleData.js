@@ -57,3 +57,23 @@ export const sampleData = [
 
     },
 ]
+
+
+export const sampleTeam = [
+    {
+        member_id: 1,
+        member: "test-2@email.com"
+    },
+    {
+        member_id: 2,
+        member: "test-3@email.com"
+    },
+    {
+        member_id: 3,
+        member: "test-4@email.com"
+    },
+    {
+        member_id: 4,
+        member: "mjkan96@gmail.com"
+    },
+]

@@ -9,8 +9,10 @@ import { sendUserDataToBackend } from "../components/tadelSlice";
 
 export default function AuthPage() {
 
+    const [username, setUsername] = useState("")
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
     const [toggleAuth, setToggleAuth] = useState("login");
     const [signupSnack, setSignupSnack] = useState(false);
     const [resetPasswordSnack, setResetPasswordSnack] = useState(false);
@@ -30,15 +32,19 @@ export default function AuthPage() {
 
     function toggleSignup() {
         setToggleAuth("signup");
+        setUsername("");
         setEmail("");
         setPassword("");
-        setErrorMessage("")
+        setConfirmPassword("");
+        setErrorMessage("");
     }
     function toggleLogin() {
         setToggleAuth("login");
+        setUsername("");
         setEmail("");
         setPassword("");
-        setErrorMessage("")
+        setConfirmPassword("");
+        setErrorMessage("");
     }
 
     async function handleSignup(e) {
@@ -48,7 +54,8 @@ export default function AuthPage() {
 
             const newUserData = {
                 firebase_uid: auth.currentUser.uid,
-                email: auth.currentUser.email
+                email: auth.currentUser.email,
+                username: username
             };
 
             dispatch(sendUserDataToBackend(newUserData));
@@ -100,7 +107,7 @@ export default function AuthPage() {
             <Container className="p-5 mt-5">
                 <Row>
                     <Col sm={7} className="d-flex align-items-center justify-content-center">
-                        <Image src="src\assets\16897435-removebg-preview.png" style={{ height: "200px" }} />
+                        <Image src="https://firebasestorage.googleapis.com/v0/b/tadel-app.appspot.com/o/tasks%2F16897435-removebg-preview.png?alt=media&token=4ab1ad38-c639-4936-a0b9-e751aaaa108a" style={{ height: "200px" }} />
                         {toggleAuth === "login" ? (
                             <h2>Tadel, where delegating tasks is no longer a task</h2>
                         ) : (
@@ -109,6 +116,18 @@ export default function AuthPage() {
                     </Col>
                     <Col sm={5} className="my-5">
                         <Form>
+                            {toggleAuth === "signup" &&
+                                <Form.Group className="my-3" controlId="username">
+                                    <Form.Label>Username</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        placeholder="Enter your username"
+                                        value={username}
+                                        onChange={(e) => setUsername(e.target.value)}
+                                        required
+                                    />
+                                </Form.Group>
+                            }
                             <Form.Group className="my-3" controlId="email">
                                 <Form.Label>Email address</Form.Label>
                                 <Form.Control
@@ -131,13 +150,29 @@ export default function AuthPage() {
                                     onChange={(e) => setPassword(e.target.value)}
                                     required
                                 />
-                                {errorMessage === "Password need to be at least 6 characters" && (
-                                    <Form.Text className="text-muted">{errorMessage}</Form.Text>
-                                )}
                                 {errorMessage === "Wrong email/password, please check and try again" && (
                                     <Form.Text className="mt-3 text-muted">{errorMessage}</Form.Text>
                                 )}
                             </Form.Group>
+                            {toggleAuth === "signup" &&
+                                <Form.Group className="my-3" controlId="confirmPassword">
+                                    <Form.Label>Confirm Password</Form.Label>
+                                    <Form.Control
+                                        type="password"
+                                        placeholder="Re-Enter your password here"
+                                        value={confirmPassword}
+                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                        required
+                                    />
+                                    {confirmPassword !== password && (
+                                        <Form.Text className="text-danger">
+                                            Please check the password entered
+                                        </Form.Text>)}
+                                    {errorMessage === "Password need to be at least 6 characters" && (
+                                        <Form.Text className="text-muted">{errorMessage}</Form.Text>
+                                    )}
+                                </Form.Group>
+                            }
                             {toggleAuth === "login" ? (
                                 <Button variant="outline-secondary" className="rounded-pill my-3" onClick={handleLogin}>Login</Button>
                             ) : (

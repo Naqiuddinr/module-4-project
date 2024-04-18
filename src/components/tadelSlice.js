@@ -1,5 +1,7 @@
 import { combineReducers, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import { storage } from "../firebase";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 
 const API_URL = import.meta.env.VITE_TADEL_API_URL;
@@ -14,6 +16,46 @@ export const sendUserDataToBackend = createAsyncThunk(
 
         return response.json();
 
+    }
+)
+
+
+//ASYNC THUNK TO FETCH ALL TEAM MEMBERS OF USERS FROM DATABASE
+
+export const fetchAllTeamByUser = createAsyncThunk(
+    "team/fetchAllTeamByUser",
+    async (originator) => {
+
+        const response = await axios.get(`${API_URL}/team`, { params: { originator: originator } });
+
+        return response.data;
+
+    }
+)
+
+//ASYNC THUNK TO ADD NEW TEAM MEMBER BY A USER
+
+export const addNewTeamMember = createAsyncThunk(
+    "team/addNewTeamMember",
+    async (newMemberInfo) => {
+
+        const response = await axios.post(`${API_URL}/team`, newMemberInfo);
+
+        return response.data[0]
+    }
+)
+
+//ASYNC THUNK TO DELETE A TEAM MEMBER BY MEMBER ID
+
+export const deleteTeamMemberById = createAsyncThunk(
+    "team/deleteTeamMemberById",
+    async (member_id) => {
+
+        console.log(member_id)
+
+        await axios.delete(`${API_URL}/team/${member_id}`);
+
+        return { member_id };
     }
 )
 
@@ -36,10 +78,60 @@ export const addNewTaskByUser = createAsyncThunk(
     "tasks/addNewTaskByUser",
     async (newTaskData) => {
 
-        const response = await axios.post(`${API_URL}/tasks`, newTaskData);
+        const {
+            title,
+            content,
+            status,
+            end_date,
+            urgent,
+            assignee,
+            originator,
+            color_tag,
+            fileUpload
+        } = newTaskData
 
-        console.log(response.data)
-        return response.data;
+        if (fileUpload === "") {
+            const fileurl = null;
+
+            const convertedData = {
+                title,
+                content,
+                status,
+                end_date,
+                urgent,
+                assignee,
+                originator,
+                color_tag,
+                fileurl
+            }
+
+            const response = await axios.post(`${API_URL}/tasks`, convertedData);
+
+            return response.data;
+
+        } else {
+
+            const storeRef = ref(storage, `tasks/${fileUpload.name}`);
+            const fileResponse = await uploadBytes(storeRef, fileUpload);
+            const fileurl = await getDownloadURL(fileResponse.ref);
+
+            const convertedData = {
+                title,
+                content,
+                status,
+                end_date,
+                urgent,
+                assignee,
+                originator,
+                color_tag,
+                fileurl
+            }
+
+            const response = await axios.post(`${API_URL}/tasks`, convertedData);
+
+            return response.data;
+
+        }
 
     }
 )
@@ -62,12 +154,62 @@ export const editTaskByTaskId = createAsyncThunk(
     "tasks/editTaskByTaskId",
     async (newEditedTaskData) => {
 
-        const { task_id } = newEditedTaskData;
+        const {
+            task_id,
+            title,
+            content,
+            status,
+            end_date,
+            urgent,
+            assignee,
+            originator,
+            color_tag,
+            fileUpload
+        } = newEditedTaskData;
 
-        const response = await axios.put(`${API_URL}/tasks/${task_id}`, newEditedTaskData);
+        if (fileUpload === null) {
+            const fileurl = null;
 
-        console.log(response.data)
-        return response.data;
+            const convertedData = {
+                task_id,
+                title,
+                content,
+                status,
+                end_date,
+                urgent,
+                assignee,
+                originator,
+                color_tag,
+                fileurl
+            }
+
+            const response = await axios.put(`${API_URL}/tasks/${task_id}`, convertedData);
+
+            return response.data[0];
+
+        } else {
+
+            const storeRef = ref(storage, `tasks/${fileUpload.name}`);
+            const fileResponse = await uploadBytes(storeRef, fileUpload);
+            const fileurl = await getDownloadURL(fileResponse.ref);
+
+            const convertedData = {
+                task_id,
+                title,
+                content,
+                status,
+                end_date,
+                urgent,
+                assignee,
+                originator,
+                color_tag,
+                fileurl
+            }
+
+            const response = await axios.put(`${API_URL}/tasks/${task_id}`, convertedData);
+
+            return response.data[0];
+        }
 
     }
 )
@@ -99,8 +241,25 @@ const tasksSlice = createSlice({
     }
 })
 
-const rootReducer = combineReducers({
-    tasks: tasksSlice.reducer
+const teamSlice = createSlice({
+    name: "team",
+    initialState: { team: [] },
+    extraReducers: (builder) => {
+        builder.addCase(fetchAllTeamByUser.fulfilled, (state, action) => {
+            state.team = action.payload;
+        })
+        builder.addCase(addNewTeamMember.fulfilled, (state, action) => {
+            state.team = [action.payload, ...state.team];
+        })
+        builder.addCase(deleteTeamMemberById.fulfilled, (state, action) => {
+            state.team = state.team.filter((member) => member.member_id !== action.payload.member_id);
+        })
+    }
 })
 
-export { tasksSlice, rootReducer };
+const rootReducer = combineReducers({
+    tasks: tasksSlice.reducer,
+    team: teamSlice.reducer
+})
+
+export { tasksSlice, teamSlice, rootReducer };

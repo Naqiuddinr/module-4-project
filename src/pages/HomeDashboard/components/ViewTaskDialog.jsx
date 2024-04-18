@@ -1,13 +1,14 @@
 import { Alert, Badge, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Paper, Snackbar } from "@mui/material";
 import { useState } from "react";
-import { Button, Col, Row } from "react-bootstrap";
+import { Button, Col, Row, Image } from "react-bootstrap";
 import { useDispatch } from "react-redux";
 
-import { auth } from "../../firebase";
-import { deleteTaskByTaskId } from "../../components/tadelSlice";
+import { auth } from "../../../firebase";
+import { deleteTaskByTaskId } from "../../../components/tadelSlice";
 
 
-export default function ViewTaskDialog({ selectedTask, showViewDialog, setShowViewDialog }) {
+
+export function ViewTaskDialog({ selectedTask, showViewDialog, setShowViewDialog, setEditTaskData, setShowEditDrawer }) {
 
     const [warningSnack, setWarningSnack] = useState(false);
     const dispatch = useDispatch();
@@ -16,9 +17,6 @@ export default function ViewTaskDialog({ selectedTask, showViewDialog, setShowVi
         return;
     }
 
-    const handleClick = () => {
-        setWarningSnack(true);
-    };
 
     const handleClose = (event, reason) => {
         if (reason === 'clickaway') {
@@ -42,13 +40,35 @@ export default function ViewTaskDialog({ selectedTask, showViewDialog, setShowVi
 
     }
 
+    function handleEditTask(selectedTask) {
+
+        const { originator } = selectedTask
+
+        if (originator !== auth.currentUser.email) {
+
+            setWarningSnack(true);
+            return
+        }
+
+        setShowEditDrawer(true);
+        setEditTaskData(selectedTask);
+        setShowViewDialog(false);
+
+    }
+
+    function handleCloseViewDialog() {
+        setShowViewDialog(false)
+        setEditTaskData(null)
+    }
+
+
     return (
 
         <>
 
             <Dialog
                 open={showViewDialog}
-                onClose={() => setShowViewDialog(false)}
+                onClose={handleCloseViewDialog}
                 fullWidth={true}
                 maxWidth="sm"
             >
@@ -58,11 +78,18 @@ export default function ViewTaskDialog({ selectedTask, showViewDialog, setShowVi
                     {selectedTask.title}
                 </DialogTitle>
                 <DialogContent>
-                    <Paper variant="outlined" style={{ height: "200px" }}>
+                    <Paper variant="outlined" style={{ height: "200px", overflow: "auto" }}>
 
-                        <DialogContentText id="" className="mt-2 ms-2">
+                        <DialogContentText id="" className="mt-2 ms-2" style={{ whiteSpace: 'pre-wrap' }}>
                             {selectedTask.content}
                         </DialogContentText>
+                        <br />
+                        <br />
+                        {selectedTask.fileurl && (
+                            <a href={selectedTask.fileurl} target="_blank" rel="noopener noreferrer">
+                                <Image src={selectedTask.fileurl} style={{ width: "400px" }} />
+                            </a>
+                        )}
                     </Paper>
                 </DialogContent>
                 <Row>
@@ -95,9 +122,8 @@ export default function ViewTaskDialog({ selectedTask, showViewDialog, setShowVi
                 <Row>
                     <Col>
                         <DialogActions className="d-flex justify-content-start">
-                            <Button className="ms-3 my-3" variant="outline-secondary" onClick={handleClick}>
+                            <Button className="ms-3 my-3" variant="outline-secondary" onClick={() => handleEditTask(selectedTask)}>
                                 Edit
-                                <i className="bi bi-pencil-square"></i>
                             </Button>
                         </DialogActions>
                     </Col>
@@ -114,7 +140,7 @@ export default function ViewTaskDialog({ selectedTask, showViewDialog, setShowVi
                 open={warningSnack}
                 autoHideDuration={6000}
                 onClose={handleClose}
-                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
             >
                 <Alert
                     onClose={handleClose}
