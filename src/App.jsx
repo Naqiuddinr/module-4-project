@@ -235,10 +235,10 @@ function ViewProfileDrawer({ showProfileDrawer, setShowProfileDrawer }) {
 
                 <Row className="mt-auto mb-4">
                     <Col className="d-flex justify-content-end">
-                        <Button variant="outline-secondary">Edit Profile</Button>
+                        <Button variant="outline-secondary" disabled>Edit Profile</Button>
                     </Col>
                     <Col>
-                        <Button variant="outline-danger">Delete Profile</Button>
+                        <Button variant="outline-danger" disabled>Delete Profile</Button>
                     </Col>
                 </Row>
 
