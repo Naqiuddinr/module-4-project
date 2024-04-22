@@ -183,7 +183,7 @@ function ViewProfileDrawer({ showProfileDrawer, setShowProfileDrawer }) {
     return (
         <>
             <Drawer size="md" open={showProfileDrawer} onClose={() => setShowProfileDrawer(false)}>
-                <Row className="p-5 mt-5 justify-content-center">
+                <Row className="p-5 mt-1 justify-content-center">
                     <Image
                         src={user?.profile_pic}
                         style={{ width: "220px", height: "220px", padding: 0, border: "5px solid #E5E7E9" }}
@@ -194,7 +194,33 @@ function ViewProfileDrawer({ showProfileDrawer, setShowProfileDrawer }) {
                     <h3>{currentUser?.email}</h3>
                 </Row>
                 {editProfileMode ? (
-                    <h3>Hello Reagan</h3>
+
+                    <>
+                        <Form className="mx-4">
+                            <Form.Group className="mb-3">
+                                <Form.Label>New image</Form.Label>
+                                <Form.Control
+                                    type="file"
+                                    accept="image/*"
+                                />
+                            </Form.Group>
+
+                            <Form.Group>
+                                <Form.Label>New username</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                />
+                            </Form.Group>
+                            <Row>
+                                <Col className="d-flex justify-content-center">
+                                    <Button className="mt-2">Submit</Button>
+                                </Col>
+
+                            </Row>
+
+                        </Form>
+                    </>
+
                 ) : (
                     <>
                         <Row className="mx-4 mt-5 mb-3">
