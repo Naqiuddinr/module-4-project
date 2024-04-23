@@ -1,12 +1,10 @@
 import { Alert, Badge, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Paper, Snackbar } from "@mui/material";
 import { useState } from "react";
-import { Button, Col, Row, Image } from "react-bootstrap";
+import { Button, Col, Row, Image, ButtonGroup } from "react-bootstrap";
 import { useDispatch } from "react-redux";
 
 import { auth } from "../../../firebase";
-import { deleteTaskByTaskId } from "../../../components/tadelSlice";
-
-
+import { deleteTaskByTaskId, editTaskByTaskId } from "../../../components/tadelSlice";
 
 export function ViewTaskDialog({ selectedTask, showViewDialog, setShowViewDialog, setEditTaskData, setShowEditDrawer }) {
 
@@ -59,6 +57,66 @@ export function ViewTaskDialog({ selectedTask, showViewDialog, setShowViewDialog
     function handleCloseViewDialog() {
         setShowViewDialog(false)
         setEditTaskData(null)
+    }
+
+    function handleMoveProgress(e) {
+        e.preventDefault();
+
+        const updateStatusProgress = {
+            task_id: selectedTask.task_id,
+            title: null,
+            content: null,
+            status: "progress",
+            end_date: null,
+            urgent: null,
+            assignee: null,
+            originator: null,
+            color_tag: null,
+            fileUpload: null
+        }
+
+        dispatch(editTaskByTaskId(updateStatusProgress))
+        handleCloseViewDialog();
+    }
+
+    function handleMovePending(e) {
+        e.preventDefault();
+
+        const updateStatusProgress = {
+            task_id: selectedTask.task_id,
+            title: null,
+            content: null,
+            status: "pending",
+            end_date: null,
+            urgent: null,
+            assignee: null,
+            originator: null,
+            color_tag: null,
+            fileUpload: null
+        }
+
+        dispatch(editTaskByTaskId(updateStatusProgress))
+        handleCloseViewDialog();
+    }
+
+    function handleMoveCompleted(e) {
+        e.preventDefault();
+
+        const updateStatusProgress = {
+            task_id: selectedTask.task_id,
+            title: null,
+            content: null,
+            status: "completed",
+            end_date: null,
+            urgent: null,
+            assignee: null,
+            originator: null,
+            color_tag: null,
+            fileUpload: null
+        }
+
+        dispatch(editTaskByTaskId(updateStatusProgress))
+        handleCloseViewDialog();
     }
 
 
@@ -126,6 +184,28 @@ export function ViewTaskDialog({ selectedTask, showViewDialog, setShowViewDialog
                                 Edit
                             </Button>
                         </DialogActions>
+                    </Col>
+                    <Col className="d-flex justify-content-center align-items-center">
+                        <ButtonGroup size="sm">
+                            {selectedTask.status === "pending" ? (
+                                <Button variant="outline-secondary" onClick={handleMoveProgress}>
+                                    <i className="bi bi-chevron-double-right"></i>
+                                </Button>
+                            ) : selectedTask.status === "progress" ? (
+                                <>
+                                    <Button variant="outline-secondary" onClick={handleMovePending}>
+                                        <i className="bi bi-chevron-double-left"></i>
+                                    </Button>
+                                    <Button variant="outline-secondary" onClick={handleMoveCompleted}>
+                                        <i className="bi bi-chevron-double-right"></i>
+                                    </Button>
+                                </>
+                            ) : (
+                                <Button variant="outline-secondary" onClick={handleMoveProgress}>
+                                    <i className="bi bi-chevron-double-left"></i>
+                                </Button>
+                            )}
+                        </ButtonGroup>
                     </Col>
                     <Col>
                         <DialogActions className="me-3">

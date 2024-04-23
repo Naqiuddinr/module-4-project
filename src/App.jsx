@@ -22,7 +22,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { Alert, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Snackbar } from "@mui/material";
-import { addNewTeamMember, deleteTeamMemberById, fetchAllTeamByUser } from "./components/tadelSlice";
+import { addNewTeamMember, deleteTeamMemberById, fetchAllTeamByUser, fetchCurrentUserData } from "./components/tadelSlice";
 
 
 function Layout() {
@@ -101,11 +101,14 @@ function ViewProfileDrawer({ showProfileDrawer, setShowProfileDrawer }) {
     useEffect(() => {
 
         dispatch(fetchAllTeamByUser(currentUser?.email));
+        dispatch(fetchCurrentUserData(currentUser?.uid));
 
     }, [dispatch, currentUser])
 
 
     const members = useSelector((state) => state.team.team)
+
+    const user = useSelector((state) => state.user.user)
 
     async function checkUser() {
 
@@ -175,70 +178,103 @@ function ViewProfileDrawer({ showProfileDrawer, setShowProfileDrawer }) {
 
     }
 
+    const [editProfileMode, setEditProfileMode] = useState(false)
+
     return (
         <>
             <Drawer size="md" open={showProfileDrawer} onClose={() => setShowProfileDrawer(false)}>
-                <Row className="p-5 mt-5 justify-content-center">
+                <Row className="p-5 mt-1 justify-content-center">
                     <Image
-                        src="https://st3.depositphotos.com/6672868/13701/v/450/depositphotos_137014128-stock-illustration-user-profile-icon.jpg"
-                        // height="200px"
-                        // width="200px"
+                        src={user?.profile_pic}
                         style={{ width: "220px", height: "220px", padding: 0, border: "5px solid #E5E7E9" }}
                         roundedCircle />
                 </Row>
                 <Row className="text-center">
-                    <h2>username</h2>
+                    <h2>{user?.username}</h2>
                     <h3>{currentUser?.email}</h3>
                 </Row>
-                <Row className="mx-4 mt-5 mb-3">
-                    <AccordionGroup sx={{
-                        [`& .${accordionSummaryClasses.indicator}`]: {
-                            transition: '0.2s',
-                        },
-                        [`& [aria-expanded="true"] .${accordionSummaryClasses.indicator}`]: {
-                            transform: 'rotate(45deg)',
-                        },
-                    }}>
-                        <Accordion>
-                            <AccordionSummary indicator={<AddIcon />}>
-                                <h4>Team Members</h4>
-                            </AccordionSummary>
-                            <AccordionDetails>
-                                <InputGroup className="my-3">
-                                    <Form.Control
-                                        type="email"
-                                        placeholder="Email Address"
-                                        value={memberEmail}
-                                        onChange={(e) => setMemberEmail(e.target.value)}
-                                    />
-                                    <Button variant="outline-secondary" className="d-flex align-items-center" onClick={checkUser}>
-                                        <AddIcon /> Add New
-                                    </Button>
-                                </InputGroup>
-                            </AccordionDetails>
-                        </Accordion>
-                    </AccordionGroup>
-                </Row>
-                {members.map((member) => (
-                    <Row className="mx-4" key={member.team_member}>
-                        <Col>
-                            <p>{member.team_member}</p>
-                        </Col>
-                        <Col className="d-flex justify-content-end me-2">
-                            <b
-                                style={{ cursor: "pointer" }}
-                                onClick={() => openDeleteDialog({ member })}
-                            >x</b>
-                        </Col>
-                    </Row>
-                ))}
+                {editProfileMode ? (
+
+                    <>
+                        <Form className="mx-4">
+                            <Form.Group className="mb-3">
+                                <Form.Label>New image</Form.Label>
+                                <Form.Control
+                                    type="file"
+                                    accept="image/*"
+                                />
+                            </Form.Group>
+
+                            <Form.Group>
+                                <Form.Label>New username</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                />
+                            </Form.Group>
+                            <Row>
+                                <Col className="d-flex justify-content-center">
+                                    <Button className="mt-2">Submit</Button>
+                                </Col>
+
+                            </Row>
+
+                        </Form>
+                    </>
+
+                ) : (
+                    <>
+                        <Row className="mx-4 mt-5 mb-3">
+                            <AccordionGroup sx={{
+                                [`& .${accordionSummaryClasses.indicator}`]: {
+                                    transition: '0.2s',
+                                },
+                                [`& [aria-expanded="true"] .${accordionSummaryClasses.indicator}`]: {
+                                    transform: 'rotate(45deg)',
+                                },
+                            }}>
+                                <Accordion>
+                                    <AccordionSummary indicator={<AddIcon />}>
+                                        <h4>Team Members</h4>
+                                    </AccordionSummary>
+                                    <AccordionDetails>
+                                        <InputGroup className="my-3">
+                                            <Form.Control
+                                                type="email"
+                                                placeholder="Email Address"
+                                                value={memberEmail}
+                                                onChange={(e) => setMemberEmail(e.target.value)}
+                                            />
+                                            <Button variant="outline-secondary" className="d-flex align-items-center" onClick={checkUser}>
+                                                <AddIcon /> Add New
+                                            </Button>
+                                        </InputGroup>
+                                    </AccordionDetails>
+                                </Accordion>
+                            </AccordionGroup>
+                        </Row>
+                        {members.map((member) => (
+                            <Row className="mx-4" key={member.team_member}>
+                                <Col>
+                                    <p>{member.team_member}</p>
+                                </Col>
+                                <Col className="d-flex justify-content-end me-2">
+                                    <b
+                                        style={{ cursor: "pointer" }}
+                                        onClick={() => openDeleteDialog({ member })}
+                                    >x</b>
+                                </Col>
+                            </Row>
+                        ))}
+                    </>
+
+                )}
 
                 <Row className="mt-auto mb-4">
                     <Col className="d-flex justify-content-end">
-                        <Button variant="outline-secondary">Edit Profile</Button>
+                        <Button variant="outline-secondary" onClick={() => setEditProfileMode(!editProfileMode)}>Edit Profile</Button>
                     </Col>
                     <Col>
-                        <Button variant="outline-danger">Delete Profile</Button>
+                        <Button variant="outline-danger" disabled>Delete Profile</Button>
                     </Col>
                 </Row>
 

@@ -19,6 +19,19 @@ export const sendUserDataToBackend = createAsyncThunk(
     }
 )
 
+//ASYNC THUNK TO FETCH CURRENT USER DATA FROM BACKEND
+
+export const fetchCurrentUserData = createAsyncThunk(
+    "users/fetchCurrentUserData",
+
+    async (currentUid) => {
+
+        const response = await axios.get(`${API_URL}/users/${currentUid}`, { currentUid });
+
+        return response.data[0]
+    }
+)
+
 
 //ASYNC THUNK TO FETCH ALL TEAM MEMBERS OF USERS FROM DATABASE
 
@@ -257,9 +270,20 @@ const teamSlice = createSlice({
     }
 })
 
-const rootReducer = combineReducers({
-    tasks: tasksSlice.reducer,
-    team: teamSlice.reducer
+const userSlice = createSlice({
+    name: "user",
+    initialState: { user: [] },
+    extraReducers: (builder) => {
+        builder.addCase(fetchCurrentUserData.fulfilled, (state, action) => {
+            state.user = action.payload;
+        })
+    }
 })
 
-export { tasksSlice, teamSlice, rootReducer };
+const rootReducer = combineReducers({
+    tasks: tasksSlice.reducer,
+    team: teamSlice.reducer,
+    user: userSlice.reducer
+})
+
+export { tasksSlice, teamSlice, userSlice, rootReducer };

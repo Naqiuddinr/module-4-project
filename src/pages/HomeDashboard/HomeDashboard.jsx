@@ -1,6 +1,6 @@
-import { Fab } from "@mui/material";
+import { Fab, Typography } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
-import { Col, Container, Row } from "react-bootstrap";
+import { Card, Col, Container, ProgressBar, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -12,6 +12,7 @@ import CardTemplate from "./components/CardTemplate";
 import AddTaskDrawer from "./components/AddTaskDrawer";
 import { ViewTaskDialog } from "./components/ViewTaskDialog";
 import { EditTaskDrawer } from "./components/EditTaskDrawer";
+import { Gauge, gaugeClasses } from "@mui/x-charts";
 
 
 export default function HomeDashboard() {
@@ -41,33 +42,91 @@ export default function HomeDashboard() {
 
         dispatch(fetchAllTaskByUser(currentUser.uid))
 
-
     }, [currentUser, navigate, dispatch])
 
     const allTasks = useSelector((state) => state.tasks.tasks)
 
+    const pendingUserTasks = allTasks.filter((task) => task.status === 'pending' && task.assignee === currentUser?.email).length;
+    const progressUserTasks = allTasks.filter((task) => task.status === 'progress' && task.assignee === currentUser?.email).length;
+    const completedUserTasks = allTasks.filter((task) => task.status === 'completed' && task.assignee === currentUser?.email).length;
+    const totalUserTasks = allTasks.filter((task) => task.assignee === currentUser?.email).length;
+
+    const pendingUserProgress = ((pendingUserTasks + progressUserTasks) / totalUserTasks) * 100;
+    const completedUserProgress = (completedUserTasks / totalUserTasks) * 100;
+
+    const pendingTeamTasks = allTasks.filter((task) => task.status === 'pending' && task.assignee !== currentUser?.email).length;
+    const progressTeamTasks = allTasks.filter((task) => task.status === 'progress' && task.assignee !== currentUser?.email).length;
+    const completedTeamTasks = allTasks.filter((task) => task.status === 'completed' && task.assignee !== currentUser?.email).length;
+    const totalTeamTasks = allTasks.filter((task) => task.assignee !== currentUser?.email).length;
+
+    const pendingTeamProgress = ((pendingTeamTasks + progressTeamTasks) / totalTeamTasks) * 100;
+    const completedTeamProgress = (completedTeamTasks / totalTeamTasks) * 100;
+
+    const pendingTasks = pendingUserTasks + pendingTeamTasks;
+    const progressTasks = progressUserTasks + progressTeamTasks;
+    const completedTasks = completedUserTasks + completedTeamTasks;
+    const totalTasks = totalUserTasks + totalTeamTasks;
+
+
+
     return (
         <>
             <Container className="mb-4" style={{ borderBottom: "1px solid #BDBDBD", position: "relative", overflowX: "hidden" }}>
-                <Row className="my-5 justify-content-center">
-                    {/* <Col md={4}>
-                        <Card>
-                            This wall have a small calender or weather forecast?
+                <Row className="my-3 justify-content-center">
+                    <h2 className="mb-2">My Dashboard</h2>
+                    <Col lg={4} sm={5}>
+                        <Card style={{ height: "170px" }}>
+                            <Row>
+                                <Col className="mt-4">
+                                    <Gauge
+                                        value={completedTasks}
+                                        valueMax={totalTasks}
+                                        height={120}
+                                        startAngle={-110}
+                                        endAngle={110}
+                                        sx={{
+                                            [`& .${gaugeClasses.valueText}`]: {
+                                                fontSize: 15,
+                                                transform: 'translate(0px, 15px)',
+                                            },
+                                        }}
+                                        text={
+                                            ({ value, valueMax }) => `${value} / ${valueMax}
+                                            Completed Task`
+                                        }
+                                    />
+                                </Col>
+                                <Col className="mt-3">
+                                    <h5>Status Report:</h5>
+                                    <p style={{ marginBottom: "2px" }}>Total Tasks: {totalTasks}</p>
+                                    <p style={{ marginBottom: "2px" }}>Pending Tasks: {pendingTasks}</p>
+                                    <p style={{ marginBottom: "2px" }}>In-Progress Tasks: {progressTasks}</p>
+                                    <p style={{ marginBottom: "2px" }}>Completed Tasks: {completedTasks}</p>
+                                </Col>
+                            </Row>
                         </Card>
                     </Col>
-                    <Col md={3}>
-                        <Card>
-                            Show the users progress
+                    <Col lg={8} sm={7}>
+                        <Card className="px-5 py-4" style={{ height: "170px" }}>
+                            <Typography variant="h6" gutterBottom>
+                                Your Progress: {completedUserProgress ? completedUserProgress.toFixed(1) : 0}%
+                            </Typography>
+                            <ProgressBar style={{ height: "20px" }}>
+                                <ProgressBar variant="success" now={completedUserProgress} />
+                                <ProgressBar variant="danger" now={pendingUserProgress} />
+                            </ProgressBar>
+                            <br />
+                            <Typography variant="h6" gutterBottom>
+                                Team Progress: {completedTeamProgress ? completedTeamProgress.toFixed(1) : 0}%
+                            </Typography>
+                            <ProgressBar style={{ height: "20px" }}>
+                                <ProgressBar variant="success" now={completedTeamProgress} />
+                                <ProgressBar variant="danger" now={pendingTeamProgress} />
+                            </ProgressBar>
                         </Card>
                     </Col>
-                    <Col md={5}>
-                        <Card>
-                            Show the team members progress
-                        </Card>
-                    </Col> */}
-                    <h1>My Dashboard</h1>
                 </Row>
-            </Container>
+            </Container >
             <Row className="justify-content-center">
                 <Col md={3} style={{ border: "1px solid #E5E7E9", borderRadius: "15px", backgroundColor: "#FBFCFC" }} className="mx-3">
                     <h4 className="my-3 ms-3" style={{ color: "#424242" }}>To Do</h4>
