@@ -36,6 +36,21 @@ export default function AddTaskDrawer({ showAddDrawer, setShowAddDrawer }) {
         setFileUpload(e.target.files[0])
     }
 
+    function handleCloseAddTaskDrawer() {
+
+        setTitle("");
+        setContent("");
+        setStatus("");
+        setEndDate(null);
+        setUrgent(false);
+        setAssignee("");
+        setColorTag("");
+        setFileUpload("");
+
+        setShowAddDrawer(false)
+
+    }
+
     function handleSubmit(e) {
         e.preventDefault();
 
@@ -77,7 +92,7 @@ export default function AddTaskDrawer({ showAddDrawer, setShowAddDrawer }) {
 
     return (
         <>
-            <Drawer size="lg" open={showAddDrawer} onClose={() => setShowAddDrawer(false)} anchor="right">
+            <Drawer size="lg" open={showAddDrawer} onClose={handleCloseAddTaskDrawer} anchor="right">
                 <Row style={{ borderBottom: "3px solid #F2F3F4" }}>
                     <h2 className="mt-5 ms-5">Add New Task</h2>
                 </Row>

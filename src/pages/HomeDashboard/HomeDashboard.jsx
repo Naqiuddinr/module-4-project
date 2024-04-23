@@ -74,7 +74,7 @@ export default function HomeDashboard() {
             <Container className="mb-4" style={{ borderBottom: "1px solid #BDBDBD", position: "relative", overflowX: "hidden" }}>
                 <Row className="my-3 justify-content-center">
                     <h2 className="mb-2">My Dashboard</h2>
-                    <Col lg={4} sm={5}>
+                    <Col xl={4} lg={6}>
                         <Card style={{ height: "170px" }}>
                             <Row>
                                 <Col className="mt-4">
@@ -106,7 +106,7 @@ export default function HomeDashboard() {
                             </Row>
                         </Card>
                     </Col>
-                    <Col lg={8} sm={7}>
+                    <Col xl={8} lg={6}>
                         <Card className="px-5 py-4" style={{ height: "170px" }}>
                             <Typography variant="h6" gutterBottom>
                                 Your Progress: {completedUserProgress ? completedUserProgress.toFixed(1) : 0}%

@@ -9,6 +9,9 @@ import { deleteTaskByTaskId, editTaskByTaskId } from "../../../components/tadelS
 export function ViewTaskDialog({ selectedTask, showViewDialog, setShowViewDialog, setEditTaskData, setShowEditDrawer }) {
 
     const [warningSnack, setWarningSnack] = useState(false);
+    const [showImageDialog, setShowImageDialog] = useState(false)
+    const [image, setImage] = useState("");
+
     const dispatch = useDispatch();
 
     if (selectedTask === null) {
@@ -119,6 +122,11 @@ export function ViewTaskDialog({ selectedTask, showViewDialog, setShowViewDialog
         handleCloseViewDialog();
     }
 
+    function handleOpenImageDialog(image) {
+        setImage(image);
+        setShowImageDialog(true)
+    }
+
 
     return (
 
@@ -131,22 +139,18 @@ export function ViewTaskDialog({ selectedTask, showViewDialog, setShowViewDialog
                 maxWidth="sm"
             >
                 <Badge style={{ backgroundColor: `${selectedTask.color_tag}`, color: `${selectedTask.color_tag}` }}>.</Badge>
-
                 <DialogTitle id="">
                     {selectedTask.title}
                 </DialogTitle>
                 <DialogContent>
                     <Paper variant="outlined" style={{ height: "200px", overflow: "auto" }}>
-
                         <DialogContentText id="" className="mt-2 ms-2" style={{ whiteSpace: 'pre-wrap' }}>
                             {selectedTask.content}
                         </DialogContentText>
                         <br />
                         <br />
                         {selectedTask.fileurl && (
-                            <a href={selectedTask.fileurl} target="_blank" rel="noopener noreferrer">
-                                <Image src={selectedTask.fileurl} style={{ width: "400px" }} />
-                            </a>
+                            <Image src={selectedTask.fileurl} style={{ width: "400px" }} onClick={() => handleOpenImageDialog(selectedTask.fileurl)} />
                         )}
                     </Paper>
                 </DialogContent>
@@ -231,6 +235,14 @@ export function ViewTaskDialog({ selectedTask, showViewDialog, setShowViewDialog
                     Only originator can edit this task!
                 </Alert>
             </Snackbar>
+            <Dialog
+                open={showImageDialog}
+                onClose={() => setShowImageDialog(false)}
+                maxWidth="xl"
+
+            >
+                <Image src={image} />
+            </Dialog>
         </>
     )
 }

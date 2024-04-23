@@ -32,6 +32,41 @@ export const fetchCurrentUserData = createAsyncThunk(
     }
 )
 
+//ASYNC THUNK TO EDIT CURRENT USER PROFILE INFO
+
+export const editUserProfileData = createAsyncThunk(
+    "users/editUserProfileData",
+
+    async (newProfileData) => {
+
+        console.log(newProfileData)
+
+        const { username, imageUpload, email } = newProfileData;
+
+        if (imageUpload === null) {
+
+            const response = await axios.put(`${API_URL}/users`, newProfileData);
+            console.log(response.data[0])
+            return response.data[0];
+
+        } else {
+
+            const storeRef = ref(storage, `profile_pic/${imageUpload.name}`);
+            const imageResponse = await uploadBytes(storeRef, imageUpload);
+            const profile_pic = await getDownloadURL(imageResponse.ref);
+
+            const convertedData = { username, profile_pic, email };
+
+            const response = await axios.put(`${API_URL}/users`, convertedData);
+            console.log(response.data[0])
+            return response.data[0];
+
+        }
+
+
+    }
+)
+
 
 //ASYNC THUNK TO FETCH ALL TEAM MEMBERS OF USERS FROM DATABASE
 
@@ -275,6 +310,9 @@ const userSlice = createSlice({
     initialState: { user: [] },
     extraReducers: (builder) => {
         builder.addCase(fetchCurrentUserData.fulfilled, (state, action) => {
+            state.user = action.payload;
+        })
+        builder.addCase(editUserProfileData.fulfilled, (state, action) => {
             state.user = action.payload;
         })
     }
