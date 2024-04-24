@@ -1,6 +1,6 @@
 import { Fab, Typography } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
-import { Card, Col, Container, ProgressBar, Row } from "react-bootstrap";
+import { Card, Col, Container, ProgressBar, Row, Spinner } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -45,6 +45,7 @@ export default function HomeDashboard() {
     }, [currentUser, navigate, dispatch])
 
     const allTasks = useSelector((state) => state.tasks.tasks)
+    const loading = useSelector((state) => state.tasks.loading)
 
     const pendingUserTasks = allTasks.filter((task) => task.status === 'pending' && task.assignee === currentUser?.email).length;
     const progressUserTasks = allTasks.filter((task) => task.status === 'progress' && task.assignee === currentUser?.email).length;
@@ -67,6 +68,7 @@ export default function HomeDashboard() {
     const completedTasks = completedUserTasks + completedTeamTasks;
     const totalTasks = totalUserTasks + totalTeamTasks;
 
+    console.log(allTasks.status)
 
 
     return (
@@ -109,7 +111,7 @@ export default function HomeDashboard() {
                     <Col xl={8} lg={6}>
                         <Card className="px-5 py-4" style={{ height: "170px" }}>
                             <Typography variant="h6" gutterBottom>
-                                Your Progress: {completedUserProgress ? completedUserProgress.toFixed(1) : 0}%
+                                Your Progress: {completedUserProgress ? completedUserProgress.toFixed(0) : 0}%
                             </Typography>
                             <ProgressBar style={{ height: "20px" }}>
                                 <ProgressBar variant="success" now={completedUserProgress} />
@@ -117,7 +119,7 @@ export default function HomeDashboard() {
                             </ProgressBar>
                             <br />
                             <Typography variant="h6" gutterBottom>
-                                Team Progress: {completedTeamProgress ? completedTeamProgress.toFixed(1) : 0}%
+                                Team Progress: {completedTeamProgress ? completedTeamProgress.toFixed(0) : 0}%
                             </Typography>
                             <ProgressBar style={{ height: "20px" }}>
                                 <ProgressBar variant="success" now={completedTeamProgress} />
@@ -130,14 +132,41 @@ export default function HomeDashboard() {
             <Row className="justify-content-center">
                 <Col md={3} style={{ border: "1px solid #E5E7E9", borderRadius: "15px", backgroundColor: "#FBFCFC" }} className="mx-3">
                     <h4 className="my-3 ms-3" style={{ color: "#424242" }}>To Do</h4>
+                    {loading && (
+                        <Container
+                            className="d-flex justify-content-center align-items-center">
+                            <Spinner className="m-5" animation="border" />
+                        </Container>
+                    )}
+                    {allTasks.filter(task => task.status === "pending").length === 0 && (
+                        <h5 className="text-center my-5 py-5" style={{ color: "#c6c9c7" }}>No Task</h5>
+                    )}
                     <CardTemplate allTasks={allTasks} status="pending" handleViewTask={handleViewTask} />
                 </Col>
                 <Col md={3} style={{ border: "1px solid #E5E7E9", borderRadius: "15px", backgroundColor: "#FBFCFC" }} className="mx-3" >
                     <h4 className="my-3 ms-3" style={{ color: "#424242" }}>In Progress</h4>
+                    {loading && (
+                        <Container
+                            className="d-flex justify-content-center align-items-center">
+                            <Spinner className="m-5" animation="border" />
+                        </Container>
+                    )}
+                    {allTasks.filter(task => task.status === "progress").length === 0 && (
+                        <h5 className="text-center my-5 py-5" style={{ color: "#c6c9c7" }}>No Task</h5>
+                    )}
                     <CardTemplate allTasks={allTasks} status="progress" handleViewTask={handleViewTask} />
                 </Col>
                 <Col md={3} style={{ border: "1px solid #E5E7E9", borderRadius: "15px", backgroundColor: "#FBFCFC" }} className="mx-3">
                     <h4 className="my-3 ms-3" style={{ color: "#424242" }}>Completed</h4>
+                    {loading && (
+                        <Container
+                            className="d-flex justify-content-center align-items-center">
+                            <Spinner className="m-5" animation="border" />
+                        </Container>
+                    )}
+                    {allTasks.filter(task => task.status === "completed").length === 0 && (
+                        <h5 className="text-center my-5 py-5" style={{ color: "#c6c9c7" }}>No Task</h5>
+                    )}
                     <CardTemplate allTasks={allTasks} status="completed" handleViewTask={handleViewTask} />
                 </Col>
             </Row>

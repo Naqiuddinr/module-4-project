@@ -16,6 +16,8 @@ import { Button, Col, Form, Image, InputGroup, Row } from "react-bootstrap";
 import { Accordion, AccordionDetails, AccordionGroup, AccordionSummary, accordionSummaryClasses, Drawer } from "@mui/joy";
 import AddIcon from '@mui/icons-material/Add';
 
+const invitePic = "https://firebasestorage.googleapis.com/v0/b/tadel-app.appspot.com/o/placeholder%2FEmail%20Invitation.JPG?alt=media&token=fa0e846a-c937-4089-b693-82cb15ff7a94"
+
 
 export default function ViewProfileDrawer({ showProfileDrawer, setShowProfileDrawer }) {
 
@@ -261,9 +263,16 @@ export default function ViewProfileDrawer({ showProfileDrawer, setShowProfileDra
                                 Please confirm if <b>{memberEmail}</b> is correct before we proceed
                             </span>
                         ) : (
-                            <span>
-                                We could not find this user, would you like us to send an invitation email to <b>{memberEmail}</b>?
-                            </span>
+                            <>
+                                <span>
+                                    We could not find this user, would you like us to send an invitation email to <b>{memberEmail}</b>?
+                                </span>
+                                <br />
+                                <br />
+                                <span>
+                                    DISCLAIMER: For demo purpose, Tadel uses the free version of mailgun. Please click <a href={invitePic} target="_blank" rel="noopener noreferrer">here</a> to see the sample email or watch the demo video here.
+                                </span>
+                            </>
                         )}
                     </DialogContentText>
                 </DialogContent>

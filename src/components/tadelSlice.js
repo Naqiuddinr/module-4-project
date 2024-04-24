@@ -268,10 +268,11 @@ export const editTaskByTaskId = createAsyncThunk(
 
 const tasksSlice = createSlice({
     name: "tasks",
-    initialState: { tasks: [] },
+    initialState: { tasks: [], loading: true },
     extraReducers: (builder) => {
         builder.addCase(fetchAllTaskByUser.fulfilled, (state, action) => {
             state.tasks = action.payload;
+            state.loading = false;
         })
         builder.addCase(addNewTaskByUser.fulfilled, (state, action) => {
             state.tasks = [...state.tasks, action.payload];
