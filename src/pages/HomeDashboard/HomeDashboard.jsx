@@ -138,7 +138,7 @@ export default function HomeDashboard() {
                             <Spinner className="m-5" animation="border" />
                         </Container>
                     )}
-                    {allTasks.filter(task => task.status === "pending").length === 0 && (
+                    {allTasks.filter(task => task.status === "pending").length === 0 && !loading && (
                         <h5 className="text-center my-5 py-5" style={{ color: "#c6c9c7" }}>No Task</h5>
                     )}
                     <CardTemplate allTasks={allTasks} status="pending" handleViewTask={handleViewTask} />
@@ -151,7 +151,7 @@ export default function HomeDashboard() {
                             <Spinner className="m-5" animation="border" />
                         </Container>
                     )}
-                    {allTasks.filter(task => task.status === "progress").length === 0 && (
+                    {allTasks.filter(task => task.status === "progress").length === 0 && !loading && (
                         <h5 className="text-center my-5 py-5" style={{ color: "#c6c9c7" }}>No Task</h5>
                     )}
                     <CardTemplate allTasks={allTasks} status="progress" handleViewTask={handleViewTask} />
@@ -164,7 +164,7 @@ export default function HomeDashboard() {
                             <Spinner className="m-5" animation="border" />
                         </Container>
                     )}
-                    {allTasks.filter(task => task.status === "completed").length === 0 && (
+                    {allTasks.filter(task => task.status === "completed").length === 0 && !loading && (
                         <h5 className="text-center my-5 py-5" style={{ color: "#c6c9c7" }}>No Task</h5>
                     )}
                     <CardTemplate allTasks={allTasks} status="completed" handleViewTask={handleViewTask} />
