@@ -270,7 +270,7 @@ export default function ViewProfileDrawer({ showProfileDrawer, setShowProfileDra
                                 <br />
                                 <br />
                                 <span>
-                                    DISCLAIMER: For demo purpose, Tadel uses the free version of mailgun. Please click <a href={invitePic} target="_blank" rel="noopener noreferrer">here</a> to see the sample email or watch the demo video here.
+                                    DISCLAIMER: For demo purpose, Tadel uses the free version of mailgun. Please click <a href={invitePic} target="_blank" rel="noopener noreferrer">here</a> to see the sample email.
                                 </span>
                             </>
                         )}
