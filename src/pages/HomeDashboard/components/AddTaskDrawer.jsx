@@ -18,7 +18,7 @@ export default function AddTaskDrawer({ showAddDrawer, setShowAddDrawer }) {
 
     const [title, setTitle] = useState("")
     const [content, setContent] = useState("")
-    const [status, setStatus] = useState("pending")
+    const [status, setStatus] = useState("")
     const [endDate, setEndDate] = useState(null)
     const [fileUpload, setFileUpload] = useState("")
     const [urgent, setUrgent] = useState(false)
@@ -36,38 +36,22 @@ export default function AddTaskDrawer({ showAddDrawer, setShowAddDrawer }) {
         setFileUpload(e.target.files[0])
     }
 
-    function handleCloseAddTaskDrawer() {
-
-        setTitle("");
-        setContent("");
-        setStatus("");
-        setEndDate(null);
-        setUrgent(false);
-        setAssignee("");
-        setColorTag("");
-        setFileUpload("");
-
-        setShowAddDrawer(false)
-
-    }
-
     function handleSubmit(e) {
         e.preventDefault();
 
-        if (!title || !endDate || !status) {
+        if (!title || !endDate) {
 
             setWarningSnack(true);
-            console.log(endDate)
             return
         }
 
         const newTaskData = {
             title,
             content,
-            status,
+            status: status === "" ? null : status,
             end_date: convertedEndTaskDate,
             urgent,
-            assignee,
+            assignee: assignee === "" ? null : assignee,
             originator,
             color_tag: colorTag,
             fileUpload
@@ -75,17 +59,22 @@ export default function AddTaskDrawer({ showAddDrawer, setShowAddDrawer }) {
 
         console.log(newTaskData)
         dispatch(addNewTaskByUser(newTaskData))
+        handleCloseAddTaskDrawer();
+    }
 
-        setShowAddDrawer(false);
+    function handleCloseAddTaskDrawer() {
 
         setTitle("");
         setContent("");
         setStatus("");
         setEndDate(null);
-        setUrgent(false);
-        setAssignee("");
-        setColorTag("");
         setFileUpload("");
+        setUrgent(false);
+        setAssignee(originator);
+        setColorTag("");
+
+        setShowAddDrawer(false)
+
     }
 
     const members = useSelector((state) => state.team.team)
@@ -153,6 +142,7 @@ export default function AddTaskDrawer({ showAddDrawer, setShowAddDrawer }) {
                                     <Select
                                         placeholder="Select Status"
                                         style={{ width: "258px" }}
+                                        value={status}
                                         onChange={(e, value) => setStatus(value)}
                                     >
                                         <Option value="pending">Pending</Option>
@@ -181,6 +171,7 @@ export default function AddTaskDrawer({ showAddDrawer, setShowAddDrawer }) {
                                     <Select
                                         placeholder="Select Assignee"
                                         style={{ width: "258px" }}
+                                        value={assignee}
                                         onChange={(e, value) => setAssignee(value)}
                                     >
                                         <Option value={originator}>{originator}</Option>

@@ -155,6 +155,7 @@ export const addNewTaskByUser = createAsyncThunk(
 
             const response = await axios.post(`${API_URL}/tasks`, convertedData);
 
+            console.log(response)
             return response.data;
 
         } else {
@@ -177,6 +178,7 @@ export const addNewTaskByUser = createAsyncThunk(
 
             const response = await axios.post(`${API_URL}/tasks`, convertedData);
 
+            console.log(response)
             return response.data;
 
         }
