@@ -1,8 +1,9 @@
-# React + Vite
+# Tadel (Task Delegation Management App) 📝
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Hi! Tadel is my second full-stack project that I build from scratch as part of my Coding Bootcamp requirement to graduate.
 
-Currently, two official plugins are available:
+Tadel utilised React.js and Node.js. This repo specifically store the code that I wrote for the front-end.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
++ If you want to see the back-end code, you can find it [here](https://github.com/Naqiuddinr/module-4-project-tadel)
++ Tadel is also live hosted using vercel, you can try it out [here](https://module-4-project-naqiuddinr.vercel.app/)
++ Since I was required to record a 2 min video for my presentation during the bootcamp, might as well include it [here](https://youtu.be/ynBE71BIlX4?si=n1fPAdOf8rnLZ0uR)
