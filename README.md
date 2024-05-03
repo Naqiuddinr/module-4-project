@@ -10,6 +10,8 @@ Tadel utilised React.js and Node.js. This repo specifically store the code that 
 
 This project took me about 3 weeks to completed after learning the tech stack about 2 months. Minor improvement might still be added later on.
 
+*DISCLAIMER: Due to using the free version of Render(live host for backend), the app might take some time to load.*
+
 ## Inspiration
 I used to work in the construction industry and was once held the Head of Department position for a project. While I was the HOD, I sometimes get overwhelmed with what are the task given to my team. So when we(bootcamp student) were required to build an app from scratch, I decided to tackle one of the problem I used to face.
 
